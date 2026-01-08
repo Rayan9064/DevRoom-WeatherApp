@@ -18,7 +18,6 @@ interface AuthContextType {
     verifyRegistrationOTP: (email: string, otp: string, username: string, password: string) => Promise<void>;
     sendPasswordResetOTP: (email: string) => Promise<void>;
     verifyPasswordResetOTP: (email: string, otp: string, newPassword?: string) => Promise<void>;
-    resetPasswordWithToken: (resetToken: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -100,10 +99,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await authService.verifyPasswordResetOTP(email, otp, newPassword);
     };
 
-    const resetPasswordWithToken = async (resetToken: string, password: string) => {
-        await authService.resetPasswordWithToken(resetToken, password);
-    };
-
     return (
         <AuthContext.Provider
             value={{
@@ -122,7 +117,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 verifyRegistrationOTP,
                 sendPasswordResetOTP,
                 verifyPasswordResetOTP,
-                resetPasswordWithToken,
             }}
         >
             {children}

@@ -117,18 +117,6 @@ export const verifyOTPValidation = [
         .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
 ];
 
-export const resetPasswordWithTokenValidation = [
-    body('resetToken')
-        .notEmpty()
-        .withMessage('Reset token is required'),
-    
-    body('password')
-        .isLength({ min: 6 })
-        .withMessage('Password must be at least 6 characters long')
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-        .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
-];
-
 /**
  * Validation rules for password reset
  */
@@ -843,75 +831,16 @@ export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-/**
- * Reset password with OTP-verified token
- */
-export const resetPasswordWithToken = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            res.status(400).json({
-                success: false,
-                message: 'Validation failed',
-                errors: errors.array()
-            });
-            return;
-        }
-
-        const { resetToken, password } = req.body;
-
-        // Find user by reset token
-        const tokenData = await TokenModel.findPasswordResetToken(resetToken);
-
-        if (!tokenData) {
-            res.status(400).json({
-                success: false,
-                message: 'Invalid or expired reset token'
-            });
-            return;
-        }
-
-        // Get email from request or token data
-        // This needs to be improved - store email in token record
-        const email = req.body.email;
-        
-        if (!email) {
-            res.status(400).json({
-                success: false,
-                message: 'Email is required'
-            });
-            return;
-        }
-
-        const user = await UserModel.findByEmail(email);
-
-        if (!user) {
-            res.status(400).json({
-                success: false,
-                message: 'User not found'
-            });
-            return;
-        }
-
-        // Update password
-        await UserModel.updatePassword(user.id, password);
-
-        // Mark token as used
-        await TokenModel.markPasswordResetTokenAsUsed(resetToken);
-
-        // Delete all refresh tokens for this user (logout from all devices)
-        await RefreshTokenModel.deleteAllByUserId(user.id);
-
-        res.status(200).json({
-            success: true,
-            message: 'Password reset successfully. Please login with your new password.'
-        });
-    } catch (error) {
-        logger.error('Reset password with token error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to reset password',
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
+export default {
+    register,
+    login,
+    getProfile,
+    refreshToken,
+    logout,
+    verifyEmail,
+    resendVerification,
+    forgotPassword,
+    resetPassword,
+    sendOTP,
+    verifyOTP
 };

@@ -76,14 +76,6 @@ export const authService = {
         return response.data;
     },
 
-    async resetPasswordWithToken(resetToken: string, password: string): Promise<ApiResponse<void>> {
-        const response = await api.post<ApiResponse<void>>('/auth/reset-password', {
-            resetToken,
-            password,
-        });
-        return response.data;
-    },
-
     async register(username: string, email: string, password: string): Promise<AuthResponse> {
         const response = await api.post<AuthResponse>('/auth/register', {
             username,

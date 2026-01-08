@@ -9,12 +9,10 @@ import {
     resendVerification,
     sendOTP,
     verifyOTP,
-    resetPasswordWithToken,
     registerValidation,
     loginValidation,
     sendOTPValidation,
-    verifyOTPValidation,
-    resetPasswordWithTokenValidation
+    verifyOTPValidation
 } from '../controllers/auth.controller';
 import { authenticateToken } from '../middleware/auth';
 
@@ -46,9 +44,6 @@ router.post('/send-otp', sendOTPValidation, sendOTP);
 
 // POST /api/auth/verify-otp - Verify OTP
 router.post('/verify-otp', verifyOTPValidation, verifyOTP);
-
-// POST /api/auth/reset-password - Reset password with OTP-verified token
-router.post('/reset-password', resetPasswordWithTokenValidation, resetPasswordWithToken);
 
 export default router;
 
