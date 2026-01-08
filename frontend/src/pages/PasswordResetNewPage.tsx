@@ -10,13 +10,13 @@ const PasswordResetNewPage: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { resetPasswordWithToken } = useAuth();
+    const { verifyPasswordResetOTP } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const resetToken = (location.state as any)?.resetToken;
     const email = (location.state as any)?.email;
+    const otpCode = (location.state as any)?.otp;
 
-    if (!resetToken || !email) {
+    if (!email || !otpCode) {
         return (
             <div className="auth-container fade-in">
                 <div className="auth-card card glass">
@@ -53,7 +53,8 @@ const PasswordResetNewPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            await resetPasswordWithToken(resetToken, password);
+            // Complete password reset by calling verifyPasswordResetOTP with newPassword
+            await verifyPasswordResetOTP(email, otpCode, password);
             toast.success('Password reset successfully!');
             setTimeout(() => navigate('/login'), 2000);
         } catch (err: any) {

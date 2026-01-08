@@ -47,10 +47,10 @@ const PasswordResetOTPPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            const resetToken = await verifyPasswordResetOTP(email, otp);
+            await verifyPasswordResetOTP(email, otp);
             toast.success('OTP verified! Now set your new password.');
             navigate('/reset-password-new', { 
-                state: { resetToken, email } 
+                state: { email, otp } 
             });
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Invalid OTP');
