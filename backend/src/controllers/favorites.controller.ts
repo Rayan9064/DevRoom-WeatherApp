@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import FavoriteModel from '../models/Favorite';
+import logger from '../config/logger';
 
 /**
  * Validation rules for adding a favorite
@@ -53,7 +54,7 @@ export const getFavorites = async (req: Request, res: Response): Promise<void> =
             }
         });
     } catch (error) {
-        console.error('Get favorites error:', error);
+        logger.error('Get favorites error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch favorites',
@@ -113,7 +114,7 @@ export const addFavorite = async (req: Request, res: Response): Promise<void> =>
             data: { favorite }
         });
     } catch (error) {
-        console.error('Add favorite error:', error);
+        logger.error('Add favorite error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to add favorite',
@@ -172,7 +173,7 @@ export const removeFavorite = async (req: Request, res: Response): Promise<void>
             message: 'Favorite removed successfully'
         });
     } catch (error) {
-        console.error('Remove favorite error:', error);
+        logger.error('Remove favorite error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to remove favorite',
@@ -201,7 +202,7 @@ export const getFavoriteCount = async (req: Request, res: Response): Promise<voi
             data: { count }
         });
     } catch (error) {
-        console.error('Get favorite count error:', error);
+        logger.error('Get favorite count error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to get favorite count',

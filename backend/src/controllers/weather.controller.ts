@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
+import logger from '../config/logger';
 
 interface WeatherData {
     city: string;
@@ -42,7 +43,7 @@ export const getWeatherByCity = async (req: Request, res: Response): Promise<voi
         const apiKey = process.env.OPENWEATHER_API_KEY;
 
         if (!apiKey) {
-            console.error('OPENWEATHER_API_KEY is not defined in environment variables');
+            logger.error('OPENWEATHER_API_KEY is not defined in environment variables');
             res.status(500).json({
                 success: false,
                 message: 'Weather service configuration error'
@@ -91,7 +92,7 @@ export const getWeatherByCity = async (req: Request, res: Response): Promise<voi
             data: weatherData
         });
     } catch (error) {
-        console.error('Weather API error:', error);
+        logger.error('Weather API error:', error);
 
         // Handle specific API errors
         if (axios.isAxiosError(error)) {
@@ -138,7 +139,7 @@ export const getWeatherByCoordinates = async (req: Request, res: Response): Prom
         const apiKey = process.env.OPENWEATHER_API_KEY;
 
         if (!apiKey) {
-            console.error('OPENWEATHER_API_KEY is not defined in environment variables');
+            logger.error('OPENWEATHER_API_KEY is not defined in environment variables');
             res.status(500).json({
                 success: false,
                 message: 'Weather service configuration error'
@@ -188,7 +189,7 @@ export const getWeatherByCoordinates = async (req: Request, res: Response): Prom
             data: weatherData
         });
     } catch (error) {
-        console.error('Weather API error:', error);
+        logger.error('Weather API error:', error);
 
         res.status(500).json({
             success: false,

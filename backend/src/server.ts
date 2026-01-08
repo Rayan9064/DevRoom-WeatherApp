@@ -207,22 +207,70 @@ const initDb = async () => {
         
         logger.info('✅ Database tables initialized');
 
-        app.listen(PORT, () => {
+        const server = app.listen(PORT, () => {
             logger.info(`🚀 Server is running on port ${PORT}`);
             logger.info(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
             logger.info(`🔒 Security middleware enabled`);
-
-            // Schedule periodic cleanup of expired OTPs (every 10 minutes)
-            setInterval(async () => {
-                try {
-                    await OTPModel.deleteExpired();
-                } catch (error) {
-                    logger.error('Error cleaning up expired OTPs:', error);
-                }
-            }, 10 * 60 * 1000);
-            
-            logger.info('⏰ OTP cleanup scheduled to run every 10 minutes');
         });
+
+        // Schedule periodic cleanup of expired OTPs (every 10 minutes)
+        const otpCleanupInterval = setInterval(async () => {
+            try {
+                await OTPModel.deleteExpired();
+            } catch (error) {
+                logger.error('Error cleaning up expired OTPs:', error);
+            }
+        }, 10 * 60 * 1000);
+        
+        logger.info('⏰ OTP cleanup scheduled to run every 10 minutes');
+
+        // Graceful shutdown handler
+        const gracefulShutdown = async (signal: string) => {
+            logger.info(`\n${signal} received. Starting graceful shutdown...`);
+            
+            // Stop accepting new connections
+            server.close(async () => {
+                logger.info('HTTP server closed');
+                
+                // Clear intervals
+                clearInterval(otpCleanupInterval);
+                logger.info('Background tasks stopped');
+                
+                // Close database connections
+                try {
+                    await pool.end();
+                    logger.info('Database connections closed');
+                } catch (error) {
+                    logger.error('Error closing database connections:', error);
+                }
+                
+                logger.info('✅ Graceful shutdown completed');
+                process.exit(0);
+            });
+
+            // Force shutdown after 30 seconds
+            setTimeout(() => {
+                logger.error('❌ Forced shutdown after timeout');
+                process.exit(1);
+            }, 30000);
+        };
+
+        // Handle shutdown signals
+        process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+        process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+        // Handle uncaught exceptions
+        process.on('uncaughtException', (error: Error) => {
+            logger.error('Uncaught Exception:', error);
+            gracefulShutdown('UNCAUGHT_EXCEPTION');
+        });
+
+        // Handle unhandled promise rejections
+        process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+            logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+            gracefulShutdown('UNHANDLED_REJECTION');
+        });
+
     } catch (err) {
         logger.error('❌ Failed to initialize database:', err);
         process.exit(1);

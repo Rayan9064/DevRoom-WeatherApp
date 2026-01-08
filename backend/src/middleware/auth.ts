@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import logger from '../config/logger';
 
 export interface JWTPayload {
     userId: number;
@@ -41,7 +42,7 @@ export const authenticateToken = (
         const jwtSecret = process.env.JWT_SECRET;
 
         if (!jwtSecret) {
-            console.error('JWT_SECRET is not defined in environment variables');
+            logger.error('JWT_SECRET is not defined in environment variables');
             res.status(500).json({
                 success: false,
                 message: 'Server configuration error'

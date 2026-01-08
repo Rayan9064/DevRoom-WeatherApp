@@ -179,7 +179,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             }
         });
     } catch (error) {
-        console.error('Login error:', error);
+        logger.error('Login error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to login',

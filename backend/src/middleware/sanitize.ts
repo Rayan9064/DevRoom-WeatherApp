@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
+import logger from '../config/logger';
 
 /**
  * Sanitize user input to prevent NoSQL injection
@@ -8,7 +9,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 export const sanitizeInput = mongoSanitize({
     replaceWith: '_',
     onSanitize: ({ req, key }) => {
-        console.warn(`Sanitized potentially malicious input: ${key} in ${req.path}`);
+        logger.warn(`Sanitized potentially malicious input: ${key} in ${req.path}`);
     }
 });
 

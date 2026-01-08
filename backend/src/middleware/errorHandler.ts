@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import logger from '../config/logger';
 
 interface ErrorResponse {
     message: string;
@@ -11,7 +12,7 @@ export const errorHandler = (
     res: Response,
     _next: NextFunction
 ): void => {
-    console.error('Error:', err);
+    logger.error('Error:', err);
 
     const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
 
