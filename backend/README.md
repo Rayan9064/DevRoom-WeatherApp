@@ -17,26 +17,45 @@ backend/
 ├── src/
 │   ├── config/
 │   │   ├── database.ts           # PostgreSQL connection pool
-│   │   └── schema.sql            # Database schema
+│   │   ├── logger.ts             # Winston logger configuration
+│   │   ├── schema.sql            # Database schema
+│   │   └── validateEnv.ts        # Environment validation with Joi
 │   ├── controllers/
-│   │   ├── auth.controller.ts    # Authentication logic
-│   │   ├── weather.controller.ts # Weather API integration
-│   │   └── favorites.controller.ts # Favorites management
+│   │   ├── auth.controller.ts    # Authentication & OTP logic
+│   │   ├── favorites.controller.ts # Favorites management
+│   │   └── weather.controller.ts # Weather API integration
 │   ├── middleware/
-│   │   ├── auth.ts               # JWT authentication
-│   │   └── errorHandler.ts       # Global error handling
+│   │   ├── auth.ts               # JWT authentication middleware
+│   │   ├── cache.ts              # In-memory caching middleware
+│   │   ├── errorHandler.ts       # Global error handling
+│   │   └── sanitize.ts           # Input sanitization & XSS protection
 │   ├── models/
-│   │   ├── User.ts               # User database operations
-│   │   └── Favorite.ts           # Favorites database operations
+│   │   ├── Favorite.ts           # Favorites database operations
+│   │   ├── OTP.ts                # OTP management for email verification
+│   │   ├── RefreshToken.ts       # Refresh token operations
+│   │   └── User.ts               # User database operations
 │   ├── routes/
 │   │   ├── auth.routes.ts        # Auth endpoints
-│   │   ├── weather.routes.ts     # Weather endpoints
-│   │   └── favorites.routes.ts   # Favorites endpoints
+│   │   ├── favorites.routes.ts   # Favorites endpoints
+│   │   └── weather.routes.ts     # Weather endpoints
+│   ├── services/
+│   │   └── emailService.ts       # Email service with Nodemailer
+│   ├── types/                    # TypeScript type definitions
 │   └── server.ts                 # Express app entry point
-├── test-db.js                    # Database connection test
-├── .env.example                  # Environment variables template
-├── package.json
-└── tsconfig.json
+├── tests/
+│   ├── auth.test.ts              # Authentication tests
+│   ├── cache.test.ts             # Cache middleware tests
+│   └── sanitize.test.ts          # Sanitization tests
+├── logs/                         # Winston log files (auto-generated)
+├── .env                          # Environment variables (not in git)
+├── .env.example                  # Environment template
+├── .gitignore                    # Git ignore rules
+├── jest.config.js                # Jest test configuration
+├── package.json                  # Dependencies & scripts
+├── setup-database.sql            # Database setup script
+├── test-db.js                    # Database test script
+├── test-db-connection.js         # Connection test utility
+└── tsconfig.json                 # TypeScript configuration
 ```
 
 ---
