@@ -10,6 +10,7 @@ import OTPModel from '../models/OTP';
 import { generateToken } from '../middleware/auth';
 import emailService from '../services/emailService';
 import logger from '../config/logger';
+import db from '../config/database';
 
 /**
  * Validation rules for registration
@@ -73,20 +74,7 @@ export const sendOTPValidation = [
     
     body('type')
         .isIn(['registration', 'password_reset'])
-        .withMessage('Invalid OTP type'),
-    
-    body('username')
-        .optional()
-        .trim()
-        .isLength({ min: 3, max: 50 })
-        .withMessage('Username must be between 3 and 50 characters'),
-    
-    body('password')
-        .optional()
-        .isLength({ min: 6 })
-        .withMessage('Password must be at least 6 characters long')
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-        .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
+        .withMessage('Invalid OTP type')
 ];
 
 export const verifyOTPValidation = [
@@ -104,7 +92,29 @@ export const verifyOTPValidation = [
     
     body('type')
         .isIn(['registration', 'password_reset'])
-        .withMessage('Invalid OTP type')
+        .withMessage('Invalid OTP type'),
+    
+    // For registration
+    body('username')
+        .optional()
+        .trim()
+        .isLength({ min: 3, max: 50 })
+        .withMessage('Username must be between 3 and 50 characters'),
+    
+    body('password')
+        .optional()
+        .isLength({ min: 6 })
+        .withMessage('Password must be at least 6 characters long')
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+        .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
+    
+    // For password reset
+    body('newPassword')
+        .optional()
+        .isLength({ min: 6 })
+        .withMessage('Password must be at least 6 characters long')
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+        .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
 ];
 
 export const resetPasswordWithTokenValidation = [
@@ -666,19 +676,15 @@ export const sendOTP = async (req: Request, res: Response): Promise<void> => {
         // Generate 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        // Store OTP
-        if (type === 'registration') {
-            const passwordHash = await bcrypt.hash(password, 10);
-            await OTPModel.createWithRegistrationData(email, otp, username, passwordHash);
-        } else {
-            await OTPModel.create(email, otp, type);
-        }
+        // Store hashed OTP (hash is done inside OTPModel.create)
+        await OTPModel.create(email, otp, type);
 
         // Send OTP email
-        const user = await UserModel.findByEmail(email);
-        const username_for_email = username || user?.username || 'User';
+        const userForEmail = type === 'registration' 
+            ? username 
+            : (await UserModel.findByEmail(email))?.username || 'User';
         
-        await emailService.sendOTPEmail(email, username_for_email, otp, type);
+        await emailService.sendOTPEmail(email, userForEmail, otp, type);
 
         res.status(200).json({
             success: true,
@@ -709,12 +715,11 @@ export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const { email, otp, type } = req.body;
+        const { email, otp: otpCode, type, username, password, newPassword } = req.body;
 
-        // Verify OTP
-        const otpRecord = await OTPModel.verify(email, otp, type);
-
-        if (!otpRecord) {
+        // Verify OTP code
+        const isOTPValid = await OTPModel.verify(email, otpCode, type);
+        if (!isOTPValid) {
             res.status(400).json({
                 success: false,
                 message: 'Invalid or expired OTP'
@@ -722,78 +727,111 @@ export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Handle registration after OTP verification
         if (type === 'registration') {
-            // Get registration data from OTP
-            const regData = await OTPModel.getRegistrationData(email, otp);
-            
-            if (!regData) {
+            // For registration, user data should be sent in the verify request
+            if (!username || !password) {
                 res.status(400).json({
                     success: false,
-                    message: 'Registration data not found'
+                    message: 'Username and password required for registration'
                 });
                 return;
             }
 
-            // Create user
-            const user = await UserModel.create(
-                regData.username,
-                email,
-                regData.password_hash,
-                true // email_verified
-            );
-
-            if (!user) {
-                res.status(500).json({
+            // Check if user already exists
+            const existingUser = await UserModel.findByEmail(email);
+            if (existingUser) {
+                res.status(400).json({
                     success: false,
-                    message: 'Failed to create user'
+                    message: 'User already registered'
                 });
                 return;
             }
 
-            // Clean up OTP
-            await OTPModel.deleteByEmailAndType(email, 'registration');
+            // Hash password
+            const passwordHash = await bcrypt.hash(password, 10);
+
+            // Create user with email_verified = true (since OTP verified)
+            const newUser = await UserModel.create(username, email, passwordHash, true);
 
             // Generate tokens
             const accessToken = generateToken({
-                userId: user.id,
-                email: user.email,
-                username: user.username
+                userId: newUser.id,
+                email: newUser.email,
+                username: newUser.username
             });
-            const refreshToken = await RefreshTokenModel.create(user.id);
 
-            // Send welcome email
-            await emailService.sendWelcomeEmail(email, user.username);
+            const refreshToken = await RefreshTokenModel.create(newUser.id);
+
+            // Clean up OTP
+            await OTPModel.deleteByEmailAndType(email, 'registration');
 
             res.status(201).json({
                 success: true,
                 message: 'Registration successful',
                 data: {
                     user: {
-                        id: user.id,
-                        username: user.username,
-                        email: user.email,
+                        id: newUser.id,
+                        username: newUser.username,
+                        email: newUser.email,
+                        email_verified: true
                     },
                     token: accessToken,
-                    refreshToken,
+                    refreshToken
                 }
             });
-        } else if (type === 'password_reset') {
-            // Generate a temporary reset token
-            const resetToken = crypto.randomBytes(32).toString('hex');
-            
-            // Store the reset token temporarily (valid for 10 minutes)
-            await TokenModel.createPasswordResetToken(0, resetToken); // User ID 0 means it's temporary
+            return;
+        }
 
-            // Clean up OTP
-            await OTPModel.deleteByEmailAndType(email, 'password_reset');
+        // Handle password reset after OTP verification
+        if (type === 'password_reset') {
+            // If new password is provided, complete the reset immediately
+            if (newPassword) {
+                // Validate password
+                if (!newPassword || newPassword.length < 6) {
+                    res.status(400).json({
+                        success: false,
+                        message: 'Password must be at least 6 characters'
+                    });
+                    return;
+                }
 
+                // Find user
+                const user = await UserModel.findByEmail(email);
+                if (!user) {
+                    res.status(404).json({
+                        success: false,
+                        message: 'User not found'
+                    });
+                    return;
+                }
+
+                // Hash new password
+                const passwordHash = await bcrypt.hash(newPassword, 10);
+
+                // Update password
+                await db.query(
+                    'UPDATE users SET password_hash = $1 WHERE id = $2',
+                    [passwordHash, user.id]
+                );
+
+                // Clean up OTP
+                await OTPModel.deleteByEmailAndType(email, 'password_reset');
+
+                res.status(200).json({
+                    success: true,
+                    message: 'Password reset successfully'
+                });
+                return;
+            }
+
+            // If new password not provided, just return success and let client prompt for new password
             res.status(200).json({
                 success: true,
-                message: 'OTP verified successfully',
-                data: {
-                    resetToken
-                }
+                message: 'OTP verified successfully. Please enter your new password.',
+                verified: true
             });
+            return;
         }
     } catch (error) {
         logger.error('Verify OTP error:', error);
