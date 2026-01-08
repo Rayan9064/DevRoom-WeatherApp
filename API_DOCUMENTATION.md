@@ -2,10 +2,22 @@
 
 Base URL: `http://localhost:5000/api`
 
+**Version:** 2.0.0  
+**Last Updated:** January 8, 2026
+
 ---
 
 ## 📋 Table of Contents
 - [Authentication](#authentication)
+  - [Register](#register-user)
+  - [Login](#login-user)
+  - [Refresh Token](#refresh-access-token)
+  - [Logout](#logout-user)
+  - [Get Profile](#get-user-profile)
+  - [Email Verification](#verify-email)
+  - [Resend Verification](#resend-verification-email)
+  - [Forgot Password](#forgot-password)
+  - [Reset Password](#reset-password)
 - [Weather](#weather)
 - [Favorites](#favorites)
 - [Response Format](#response-format)
@@ -24,7 +36,7 @@ Authorization: Bearer <your_jwt_token>
 
 **POST** `/auth/register`
 
-Register a new user account.
+Register a new user account. Sends a verification email.
 
 **Request Body:**
 ```json
@@ -44,15 +56,17 @@ Register a new user account.
 ```json
 {
   "success": true,
-  "message": "User registered successfully",
+  "message": "User registered successfully. Please check your email to verify your account.",
   "data": {
     "user": {
       "id": 1,
       "username": "johndoe",
       "email": "john@example.com",
-      "created_at": "2026-01-04T15:00:00.000Z"
+      "email_verified": false,
+      "created_at": "2026-01-08T15:00:00.000Z"
     },
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "a1b2c3d4e5f6..."
   }
 }
 ```
@@ -67,7 +81,7 @@ Register a new user account.
 
 **POST** `/auth/login`
 
-Authenticate and receive a JWT token.
+Authenticate and receive JWT and refresh tokens.
 
 **Request Body:**
 ```json
@@ -87,9 +101,11 @@ Authenticate and receive a JWT token.
       "id": 1,
       "username": "johndoe",
       "email": "john@example.com",
-      "created_at": "2026-01-04T15:00:00.000Z"
+      "email_verified": true,
+      "created_at": "2026-01-08T15:00:00.000Z"
     },
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "a1b2c3d4e5f6..."
   }
 }
 ```
@@ -98,6 +114,196 @@ Authenticate and receive a JWT token.
 - `400`: Validation failed
 - `401`: Invalid email or password
 
+---
+
+### Refresh Access Token
+
+**POST** `/auth/refresh`
+
+Get a new access token using a refresh token.
+
+**Request Body:**
+```json
+{
+  "refreshToken": "a1b2c3d4e5f6..."
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Token refreshed successfully",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "x9y8z7w6v5u4..."
+  }
+}
+```
+
+**Error Responses:**
+- `400`: Refresh token is required
+- `401`: Invalid or expired refresh token
+
+---
+
+### Logout User
+
+**POST** `/auth/logout`
+
+Invalidate the refresh token.
+
+**Request Body:**
+```json
+{
+  "refreshToken": "a1b2c3d4e5f6..."
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+```
+
+---
+
+### Get User Profile
+
+**GET** `/auth/profile` 🔒
+
+Get the authenticated user's profile.
+
+**Headers:**
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "johndoe",
+      "email": "john@example.com",
+      "email_verified": true,
+      "created_at": "2026-01-08T15:00:00.000Z"
+    }
+  }
+}
+```
+
+**Error Responses:**
+- `401`: Unauthorized (missing or invalid token)
+- `404`: User not found
+
+---
+
+### Verify Email
+
+**GET** `/auth/verify-email/:token`
+
+Verify user email address using the token from the verification email.
+
+**URL Parameters:**
+- `token`: Email verification token (from email link)
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Email verified successfully"
+}
+```
+
+**Error Responses:**
+- `400`: Invalid or expired verification token
+
+---
+
+### Resend Verification Email
+
+**POST** `/auth/resend-verification` 🔒
+
+Resend the email verification email.
+
+**Headers:**
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Verification email sent"
+}
+```
+
+**Error Responses:**
+- `400`: Email already verified
+- `401`: Unauthorized
+
+---
+
+### Forgot Password
+
+**POST** `/auth/forgot-password`
+
+Request a password reset email.
+
+**Request Body:**
+```json
+{
+  "email": "john@example.com"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "If an account with that email exists, a password reset link has been sent"
+}
+```
+
+**Note:** For security, the response is the same whether the email exists or not.
+
+---
+
+### Reset Password
+
+**POST** `/auth/reset-password`
+
+Reset password using the token from the reset email.
+
+**Request Body:**
+```json
+{
+  "token": "abc123def456...",
+  "password": "NewSecurePass123"
+}
+```
+
+**Validation Rules:**
+- `password`: Minimum 6 characters, must contain uppercase, lowercase, and number
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Password reset successfully. Please login with your new password."
+}
+```
+
+**Error Responses:**
+- `400`: Invalid or expired reset token, or validation failed
+
+**Note:** All refresh tokens are invalidated (user is logged out from all devices).
 ---
 
 ### Get User Profile
