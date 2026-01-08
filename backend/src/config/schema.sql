@@ -43,14 +43,12 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
     expires_at TIMESTAMP NOT NULL
 );
 
--- OTPs table
+-- OTPs table - stores hashed OTPs for security
 CREATE TABLE IF NOT EXISTS otps (
     id SERIAL PRIMARY KEY,
     email VARCHAR(100) NOT NULL,
-    otp_code VARCHAR(6) NOT NULL,
+    otp_hash VARCHAR(255) NOT NULL, -- Bcrypt hashed OTP
     type VARCHAR(20) NOT NULL, -- 'registration' or 'password_reset'
-    username VARCHAR(50),
-    password_hash VARCHAR(255),
     is_verified BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP NOT NULL
