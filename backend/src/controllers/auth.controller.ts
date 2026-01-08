@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { v4 as uuidv4 } from 'uuid';
-import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import UserModel from '../models/User';
 import RefreshTokenModel from '../models/RefreshToken';
@@ -49,17 +48,6 @@ export const loginValidation = [
     body('password')
         .notEmpty()
         .withMessage('Password is required')
-];
-
-/**
- * Validation rules for password reset request
- */
-export const forgotPasswordValidation = [
-    body('email')
-        .trim()
-        .isEmail()
-        .withMessage('Please provide a valid email address')
-        .normalizeEmail()
 ];
 
 /**
@@ -515,105 +503,6 @@ export const resendVerification = async (req: Request, res: Response): Promise<v
 };
 
 /**
- * Forgot password - send reset email
- */
-export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            res.status(400).json({
-                success: false,
-                message: 'Validation failed',
-                errors: errors.array()
-            });
-            return;
-        }
-
-        const { email } = req.body;
-
-        const user = await UserModel.findByEmail(email);
-
-        // Don't reveal if user exists for security
-        if (!user) {
-            res.status(200).json({
-                success: true,
-                message: 'If an account with that email exists, a password reset link has been sent'
-            });
-            return;
-        }
-
-        // Generate reset token
-        const resetToken = crypto.randomBytes(32).toString('hex');
-        await TokenModel.createPasswordResetToken(user.id, resetToken);
-
-        // Send reset email
-        await emailService.sendPasswordResetEmail(user.email, user.username, resetToken);
-
-        res.status(200).json({
-            success: true,
-            message: 'If an account with that email exists, a password reset link has been sent'
-        });
-    } catch (error) {
-        logger.error('Forgot password error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to process password reset request',
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
-};
-
-/**
- * Reset password
- */
-export const resetPassword = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            res.status(400).json({
-                success: false,
-                message: 'Validation failed',
-                errors: errors.array()
-            });
-            return;
-        }
-
-        const { token, password } = req.body;
-
-        // Find reset token
-        const tokenData = await TokenModel.findPasswordResetToken(token);
-
-        if (!tokenData) {
-            res.status(400).json({
-                success: false,
-                message: 'Invalid or expired reset token'
-            });
-            return;
-        }
-
-        // Update password
-        await UserModel.updatePassword(tokenData.user_id, password);
-
-        // Mark token as used
-        await TokenModel.markPasswordResetTokenAsUsed(token);
-
-        // Delete all refresh tokens for this user (logout from all devices)
-        await RefreshTokenModel.deleteAllByUserId(tokenData.user_id);
-
-        res.status(200).json({
-            success: true,
-            message: 'Password reset successfully. Please login with your new password.'
-        });
-    } catch (error) {
-        logger.error('Reset password error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to reset password',
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
-};
-/**
  * Send OTP for registration or password reset
  */
 export const sendOTP = async (req: Request, res: Response): Promise<void> => {
@@ -839,8 +728,6 @@ export default {
     logout,
     verifyEmail,
     resendVerification,
-    forgotPassword,
-    resetPassword,
     sendOTP,
     verifyOTP
 };
