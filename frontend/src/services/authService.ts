@@ -65,9 +65,44 @@ export const authService = {
         return response.data;
     },
 
-    logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+    async refreshToken(): Promise<AuthResponse> {
+        const response = await api.post<AuthResponse>('/auth/refresh');
+        if (response.data.data?.token) {
+            localStorage.setItem('token', response.data.data.token);
+            if (response.data.data.user) {
+                localStorage.setItem('user', JSON.stringify(response.data.data.user));
+            }
+        }
+        return response.data;
+    },
+
+    async logout(): Promise<void> {
+        try {
+            await api.post('/auth/logout');
+        } finally {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        }
+    },
+
+    async verifyEmail(token: string): Promise<ApiResponse<void>> {
+        const response = await api.get<ApiResponse<void>>(`/auth/verify-email/${token}`);
+        return response.data;
+    },
+
+    async resendVerification(): Promise<ApiResponse<void>> {
+        const response = await api.post<ApiResponse<void>>('/auth/resend-verification');
+        return response.data;
+    },
+
+    async forgotPassword(email: string): Promise<ApiResponse<void>> {
+        const response = await api.post<ApiResponse<void>>('/auth/forgot-password', { email });
+        return response.data;
+    },
+
+    async resetPassword(token: string, password: string): Promise<ApiResponse<void>> {
+        const response = await api.post<ApiResponse<void>>('/auth/reset-password', { token, password });
+        return response.data;
     },
 
     getCurrentUser(): User | null {
