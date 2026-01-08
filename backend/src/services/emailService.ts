@@ -23,18 +23,18 @@ class EmailService {
         }
 
         try {
+            const port = parseInt(process.env.EMAIL_PORT || '587');
+            
             // Create reusable transporter
             this.transporter = nodemailer.createTransport({
-                host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-                port: parseInt(process.env.EMAIL_PORT || '587'),
-                secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
+                service: 'gmail', // Use Gmail service for simpler configuration
                 auth: {
                     user: process.env.EMAIL_USER,
                     pass: process.env.EMAIL_PASSWORD,
                 },
             });
 
-            logger.info('✅ Email service initialized');
+            logger.info('✅ Email service initialized with Gmail');
         } catch (error) {
             logger.error('❌ Failed to initialize email service:', error);
         }
