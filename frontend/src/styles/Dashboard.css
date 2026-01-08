@@ -1,0 +1,133 @@
+.dashboard {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+.search-section {
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    text-align: center;
+}
+
+.search-form {
+    display: flex;
+    gap: 1rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.search-btn {
+    border-radius: 50px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.dashboard-content {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+    align-items: start;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.favorites-sidebar {
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    position: sticky;
+    top: 100px;
+}
+
+.favorites-sidebar h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.no-favorites {
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.favorites-list {
+    list-style: none;
+}
+
+.favorite-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.favorite-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+}
+
+.fav-city {
+    font-weight: 500;
+}
+
+.fav-country {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
+    .dashboard-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .favorites-sidebar {
+        position: static;
+    }
+}
