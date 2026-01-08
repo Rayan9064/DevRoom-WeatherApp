@@ -122,66 +122,6 @@ class EmailService {
     }
 
     /**
-     * Send password reset email
-     */
-    async sendPasswordResetEmail(email: string, username: string, token: string): Promise<boolean> {
-        const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
-
-        const html = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-                    .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; }
-                    .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-                    .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 15px 0; }
-                    .footer { text-align: center; color: #666; margin-top: 20px; font-size: 12px; }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>🔐 Password Reset Request</h1>
-                    </div>
-                    <div class="content">
-                        <h2>Hi ${username}!</h2>
-                        <p>We received a request to reset your password for your Weather Dashboard account.</p>
-                        <p style="text-align: center;">
-                            <a href="${resetUrl}" class="button">Reset Password</a>
-                        </p>
-                        <p>Or copy and paste this link into your browser:</p>
-                        <p style="word-break: break-all; background: white; padding: 10px; border-radius: 5px;">
-                            ${resetUrl}
-                        </p>
-                        <div class="warning">
-                            <strong>⚠️ Security Notice:</strong>
-                            <ul>
-                                <li>This link will expire in 1 hour</li>
-                                <li>It can only be used once</li>
-                                <li>If you didn't request this, please ignore this email</li>
-                            </ul>
-                        </div>
-                        <p>If you didn't request a password reset, your account is still secure and you can safely ignore this email.</p>
-                    </div>
-                    <div class="footer">
-                        <p>&copy; 2026 Weather Dashboard. All rights reserved.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-        `;
-
-        return this.sendEmail({
-            to: email,
-            subject: 'Password Reset Request - Weather Dashboard',
-            html,
-        });
-    }
-
-    /**
      * Send OTP for email verification or password reset
      */
     async sendOTPEmail(email: string, username: string, otp: string, type: 'registration' | 'password_reset'): Promise<boolean> {

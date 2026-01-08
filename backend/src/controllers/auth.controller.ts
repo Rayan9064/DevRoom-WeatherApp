@@ -106,21 +106,6 @@ export const verifyOTPValidation = [
 ];
 
 /**
- * Validation rules for password reset
- */
-export const resetPasswordValidation = [
-    body('token')
-        .notEmpty()
-        .withMessage('Reset token is required'),
-    
-    body('password')
-        .isLength({ min: 6 })
-        .withMessage('Password must be at least 6 characters long')
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-        .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
-];
-
-/**
  * Register a new user
  */
 export const register = async (req: Request, res: Response): Promise<void> => {
