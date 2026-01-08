@@ -6,6 +6,7 @@ export interface User {
     username: string;
     email: string;
     password_hash: string;
+    email_verified: boolean;
     created_at: Date;
     updated_at: Date;
 }
@@ -20,6 +21,7 @@ export interface UserResponse {
     id: number;
     username: string;
     email: string;
+    email_verified: boolean;
     created_at: Date;
 }
 
@@ -70,10 +72,29 @@ class UserModel {
      * Find user by ID
      */
     async findById(id: number): Promise<UserResponse | null> {
-        const query = 'SELECT id, username, email, created_at FROM users WHERE id = $1';
+        const query = 'SELECT id, username, email, email_verified, created_at FROM users WHERE id = $1';
         const result = await pool.query(query, [id]);
 
         return result.rows[0] || null;
+    }
+
+    /**
+     * Verify user email
+     */
+    async verifyEmail(userId: number): Promise<void> {
+        const query = 'UPDATE users SET email_verified = true WHERE id = $1';
+        await pool.query(query, [userId]);
+    }
+
+    /**
+     * Update password
+     */
+    async updatePassword(userId: number, newPassword: string): Promise<void> {
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(newPassword, saltRounds);
+        
+        const query = 'UPDATE users SET password_hash = $1 WHERE id = $2';
+        await pool.query(query, [password_hash, userId]);
     }
 
     /**
