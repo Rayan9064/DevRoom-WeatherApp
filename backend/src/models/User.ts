@@ -27,10 +27,10 @@ export interface UserResponse {
 
 class UserModel {
     /**
-     * Create a new user
+     * Create a new user - supports two signatures:
+     * create(userData: CreateUserDTO)
+     * create(username: string, email: string, passwordHash: string, emailVerified?: boolean)
      */
-    async create(userData: CreateUserDTO): Promise<UserResponse>;
-    async create(username: string, email: string, passwordHash: string, emailVerified?: boolean): Promise<UserResponse>;
     async create(usernameOrData: string | CreateUserDTO, email?: string, passwordHash?: string, emailVerified: boolean = false): Promise<UserResponse> {
         let username: string;
         let finalEmail: string;
@@ -39,10 +39,12 @@ class UserModel {
 
         // Handle both signatures
         if (typeof usernameOrData === 'string') {
+            // Signature: create(username, email, passwordHash, emailVerified?)
             username = usernameOrData;
             finalEmail = email!;
             finalPasswordHash = passwordHash!;
         } else {
+            // Signature: create(userData: CreateUserDTO)
             username = usernameOrData.username;
             finalEmail = usernameOrData.email;
             // Hash password if it's the password string

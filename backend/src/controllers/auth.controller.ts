@@ -754,11 +754,12 @@ export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
             await OTPModel.deleteByEmailAndType(email, 'registration');
 
             // Generate tokens
-            const accessToken = generateToken(user.id, '15m');
-            const refreshToken = generateToken(user.id, '7d');
-
-            // Store refresh token
-            await RefreshTokenModel.create(user.id, refreshToken);
+            const accessToken = generateToken({
+                userId: user.id,
+                email: user.email,
+                username: user.username
+            });
+            const refreshToken = await RefreshTokenModel.create(user.id);
 
             // Send welcome email
             await emailService.sendWelcomeEmail(email, user.username);
