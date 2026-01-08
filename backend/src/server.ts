@@ -13,6 +13,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { sanitizeInput, xssProtection } from './middleware/sanitize';
 import logger, { morganStream } from './config/logger';
 import { validateEnv } from './config/validateEnv';
+import OTPModel from './models/OTP';
 
 // Load environment variables
 dotenv.config();
@@ -235,6 +236,17 @@ const initDb = async () => {
             logger.info(`🚀 Server is running on port ${PORT}`);
             logger.info(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
             logger.info(`🔒 Security middleware enabled`);
+
+            // Schedule periodic cleanup of expired OTPs (every 10 minutes)
+            setInterval(async () => {
+                try {
+                    await OTPModel.deleteExpired();
+                } catch (error) {
+                    logger.error('Error cleaning up expired OTPs:', error);
+                }
+            }, 10 * 60 * 1000);
+            
+            logger.info('⏰ OTP cleanup scheduled to run every 10 minutes');
         });
     } catch (err) {
         logger.error('❌ Failed to initialize database:', err);
