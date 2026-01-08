@@ -11,7 +11,6 @@ import RegistrationOTPPage from './pages/RegistrationOTPPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import PasswordResetOTPPage from './pages/PasswordResetOTPPage';
 import PasswordResetNewPage from './pages/PasswordResetNewPage';
-import EmailVerificationPage from './pages/EmailVerificationPage';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/Auth.css'; // Import auth styles globallu
@@ -45,7 +44,6 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/verify-password-reset-otp" element={<PasswordResetOTPPage />} />
               <Route path="/reset-password-new" element={<PasswordResetNewPage />} />
-              <Route path="/verify-email" element={<EmailVerificationPage />} />
 
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
