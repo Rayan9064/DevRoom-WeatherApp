@@ -35,21 +35,21 @@ api.interceptors.response.use(
 );
 
 export const authService = {
-    async sendRegistrationOTP(email: string, username: string, password: string): Promise<ApiResponse<{ message: string }>> {
+    async sendRegistrationOTP(email: string): Promise<ApiResponse<{ message: string }>> {
         const response = await api.post<ApiResponse<{ message: string }>>('/auth/send-otp', {
             email,
             type: 'registration',
-            username,
-            password,
         });
         return response.data;
     },
 
-    async verifyRegistrationOTP(email: string, otp: string): Promise<AuthResponse> {
+    async verifyRegistrationOTP(email: string, otp: string, username: string, password: string): Promise<AuthResponse> {
         const response = await api.post<AuthResponse>('/auth/verify-otp', {
             email,
             otp,
             type: 'registration',
+            username,
+            password,
         });
         if (response.data.data?.token) {
             localStorage.setItem('token', response.data.data.token);
@@ -66,11 +66,12 @@ export const authService = {
         return response.data;
     },
 
-    async verifyPasswordResetOTP(email: string, otp: string): Promise<ApiResponse<{ resetToken: string }>> {
-        const response = await api.post<ApiResponse<{ resetToken: string }>>('/auth/verify-otp', {
+    async verifyPasswordResetOTP(email: string, otp: string, newPassword?: string): Promise<ApiResponse<{ verified?: boolean; message: string }>> {
+        const response = await api.post<ApiResponse<{ verified?: boolean; message: string }>>('/auth/verify-otp', {
             email,
             otp,
             type: 'password_reset',
+            newPassword,
         });
         return response.data;
     },
