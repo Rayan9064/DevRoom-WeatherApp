@@ -49,7 +49,7 @@ const RegistrationOTPPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            await verifyRegistrationOTP(email, otp);
+            await verifyRegistrationOTP(email, otp, username, password);
             toast.success('Email verified and account created successfully!');
             navigate('/');
         } catch (err: any) {

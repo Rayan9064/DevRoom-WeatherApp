@@ -43,7 +43,7 @@ const RegisterPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            await sendRegistrationOTP(email, username, password);
+            await sendRegistrationOTP(email);
             toast.success('OTP sent to your email!');
             navigate('/verify-registration-otp', {
                 state: { email, username, password }
