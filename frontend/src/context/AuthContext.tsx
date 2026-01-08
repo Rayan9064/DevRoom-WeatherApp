@@ -14,10 +14,10 @@ interface AuthContextType {
     resendVerification: () => Promise<void>;
     forgotPassword: (email: string) => Promise<void>;
     resetPassword: (token: string, password: string) => Promise<void>;
-    sendRegistrationOTP: (email: string, username: string, password: string) => Promise<void>;
-    verifyRegistrationOTP: (email: string, otp: string) => Promise<void>;
+    sendRegistrationOTP: (email: string) => Promise<void>;
+    verifyRegistrationOTP: (email: string, otp: string, username: string, password: string) => Promise<void>;
     sendPasswordResetOTP: (email: string) => Promise<void>;
-    verifyPasswordResetOTP: (email: string, otp: string) => Promise<string>;
+    verifyPasswordResetOTP: (email: string, otp: string, newPassword?: string) => Promise<void>;
     resetPasswordWithToken: (resetToken: string, password: string) => Promise<void>;
 }
 
@@ -81,12 +81,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await authService.resetPassword(token, password);
     };
 
-    const sendRegistrationOTP = async (email: string, username: string, password: string) => {
-        await authService.sendRegistrationOTP(email, username, password);
+    const sendRegistrationOTP = async (email: string) => {
+        await authService.sendRegistrationOTP(email);
     };
 
-    const verifyRegistrationOTP = async (email: string, otp: string) => {
-        const response = await authService.verifyRegistrationOTP(email, otp);
+    const verifyRegistrationOTP = async (email: string, otp: string, username: string, password: string) => {
+        const response = await authService.verifyRegistrationOTP(email, otp, username, password);
         if (response.data?.user) {
             setUser(response.data.user);
         }
@@ -96,9 +96,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await authService.sendPasswordResetOTP(email);
     };
 
-    const verifyPasswordResetOTP = async (email: string, otp: string): Promise<string> => {
-        const response = await authService.verifyPasswordResetOTP(email, otp);
-        return response.data?.resetToken || '';
+    const verifyPasswordResetOTP = async (email: string, otp: string, newPassword?: string) => {
+        await authService.verifyPasswordResetOTP(email, otp, newPassword);
     };
 
     const resetPasswordWithToken = async (resetToken: string, password: string) => {
