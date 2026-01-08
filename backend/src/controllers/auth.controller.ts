@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
 import UserModel from '../models/User';
 import RefreshTokenModel from '../models/RefreshToken';
-import TokenModel from '../models/Token';
 import OTPModel from '../models/OTP';
 import { generateToken } from '../middleware/auth';
 import emailService from '../services/emailService';
@@ -106,86 +105,14 @@ export const verifyOTPValidation = [
 ];
 
 /**
- * Register a new user
+ * Register a new user (Legacy - use OTP-based registration instead)
+ * This endpoint is deprecated in favor of the OTP flow
  */
 export const register = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // Check for validation errors
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            res.status(400).json({
-                success: false,
-                message: 'Validation failed',
-                errors: errors.array()
-            });
-            return;
-        }
-
-        const { username, email, password } = req.body;
-
-        // Check if email already exists
-        const emailExists = await UserModel.emailExists(email);
-        if (emailExists) {
-            res.status(409).json({
-                success: false,
-                message: 'Email already registered'
-            });
-            return;
-        }
-
-        // Check if username already exists
-        const usernameExists = await UserModel.usernameExists(username);
-        if (usernameExists) {
-            res.status(409).json({
-                success: false,
-                message: 'Username already taken'
-            });
-            return;
-        }
-
-        // Create user
-        const user = await UserModel.create({ username, email, password });
-
-        // Generate email verification token
-        const verificationToken = uuidv4();
-        await TokenModel.createEmailVerificationToken(user.id, verificationToken);
-
-        // Send verification email
-        await emailService.sendVerificationEmail(user.email, user.username, verificationToken);
-
-        // Generate JWT token
-        const token = generateToken({
-            userId: user.id,
-            email: user.email,
-            username: user.username
-        });
-
-        // Generate refresh token
-        const refreshToken = await RefreshTokenModel.create(user.id);
-
-        res.status(201).json({
-            success: true,
-            message: 'User registered successfully. Please check your email to verify your account.',
-            data: {
-                user: {
-                    id: user.id,
-                    username: user.username,
-                    email: user.email,
-                    email_verified: false,
-                    created_at: user.created_at
-                },
-                token,
-                refreshToken
-            }
-        });
-    } catch (error) {
-        console.error('Registration error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to register user',
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
+    res.status(410).json({
+        success: false,
+        message: 'This endpoint is deprecated. Please use OTP-based registration: /api/auth/send-otp'
+    });
 };
 
 /**
@@ -390,101 +317,23 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
 };
 
 /**
- * Verify email
+ * Verify email (Deprecated - use OTP verification)
  */
 export const verifyEmail = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { token } = req.params;
-
-        // Find verification token
-        const tokenData = await TokenModel.findEmailVerificationToken(token);
-
-        if (!tokenData) {
-            res.status(400).json({
-                success: false,
-                message: 'Invalid or expired verification token'
-            });
-            return;
-        }
-
-        // Verify email
-        await UserModel.verifyEmail(tokenData.user_id);
-
-        // Delete used token
-        await TokenModel.deleteEmailVerificationToken(token);
-
-        // Get user
-        const user = await UserModel.findById(tokenData.user_id);
-
-        if (user) {
-            // Send welcome email
-            await emailService.sendWelcomeEmail(user.email, user.username);
-        }
-
-        res.status(200).json({
-            success: true,
-            message: 'Email verified successfully'
-        });
-    } catch (error) {
-        logger.error('Email verification error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to verify email',
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
+    res.status(410).json({
+        success: false,
+        message: 'This endpoint is deprecated. Email verification is now done via OTP.'
+    });
 };
 
 /**
- * Resend verification email
+ * Resend verification email (Deprecated)
  */
 export const resendVerification = async (req: Request, res: Response): Promise<void> => {
-    try {
-        if (!req.user) {
-            res.status(401).json({
-                success: false,
-                message: 'Unauthorized'
-            });
-            return;
-        }
-
-        const user = await UserModel.findById(req.user.userId);
-
-        if (!user) {
-            res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-            return;
-        }
-
-        if (user.email_verified) {
-            res.status(400).json({
-                success: false,
-                message: 'Email already verified'
-            });
-            return;
-        }
-
-        // Generate new verification token
-        const verificationToken = uuidv4();
-        await TokenModel.createEmailVerificationToken(user.id, verificationToken);
-
-        // Send verification email
-        await emailService.sendVerificationEmail(user.email, user.username, verificationToken);
-
-        res.status(200).json({
-            success: true,
-            message: 'Verification email sent'
-        });
-    } catch (error) {
-        logger.error('Resend verification error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to send verification email',
-            error: error instanceof Error ? error.message : 'Unknown error'
-        });
-    }
+    res.status(410).json({
+        success: false,
+        message: 'This endpoint is deprecated. Use OTP-based verification instead.'
+    });
 };
 
 /**
