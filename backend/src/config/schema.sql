@@ -51,6 +51,7 @@ CREATE INDEX IF NOT EXISTS idx_favorite_cities_user_id ON favorite_cities(user_i
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token);
 CREATE INDEX IF NOT EXISTS idx_otps_email ON otps(email);
+CREATE INDEX IF NOT EXISTS idx_otps_email_type ON otps(email, type);
 CREATE INDEX IF NOT EXISTS idx_otps_expires_at ON otps(expires_at);
 
 -- Create updated_at trigger function
