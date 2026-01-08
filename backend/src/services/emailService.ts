@@ -182,6 +182,69 @@ class EmailService {
     }
 
     /**
+     * Send OTP for email verification or password reset
+     */
+    async sendOTPEmail(email: string, username: string, otp: string, type: 'registration' | 'password_reset'): Promise<boolean> {
+        const subject = type === 'registration' 
+            ? 'Email Verification Code - Weather Dashboard'
+            : 'Password Reset Code - Weather Dashboard';
+
+        const title = type === 'registration'
+            ? 'Email Verification'
+            : 'Password Reset';
+
+        const description = type === 'registration'
+            ? 'Use this code to verify your email and complete your registration:'
+            : 'Use this code to reset your password:';
+
+        const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                    .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; }
+                    .otp-box { background: white; padding: 20px; border-radius: 5px; margin: 20px 0; text-align: center; border: 2px solid #3b82f6; }
+                    .otp-code { font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #3b82f6; font-family: monospace; }
+                    .footer { text-align: center; color: #666; margin-top: 20px; font-size: 12px; }
+                    .warning { background: #fff3cd; padding: 10px; border-radius: 5px; margin: 20px 0; color: #856404; font-size: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🌤️ ${title}</h1>
+                    </div>
+                    <div class="content">
+                        <h2>Hi ${username}!</h2>
+                        <p>${description}</p>
+                        <div class="otp-box">
+                            <p style="margin: 0; color: #666; font-size: 12px; margin-bottom: 10px;">Enter this code:</p>
+                            <div class="otp-code">${otp}</div>
+                        </div>
+                        <div class="warning">
+                            <strong>⚠️ Security Notice:</strong> Never share this code with anyone. Our team will never ask for your OTP.
+                        </div>
+                        <p style="color: #999; font-size: 12px;">This code will expire in <strong>5 minutes</strong>. If you didn't request this code, please ignore this email.</p>
+                    </div>
+                    <div class="footer">
+                        <p>&copy; 2026 Weather Dashboard. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+
+        return this.sendEmail({
+            to: email,
+            subject,
+            html,
+        });
+    }
+
+    /**
      * Send welcome email (after verification)
      */
     async sendWelcomeEmail(email: string, username: string): Promise<boolean> {

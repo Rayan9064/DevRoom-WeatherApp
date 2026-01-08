@@ -29,20 +29,34 @@ class UserModel {
     /**
      * Create a new user
      */
-    async create(userData: CreateUserDTO): Promise<UserResponse> {
-        const { username, email, password } = userData;
+    async create(userData: CreateUserDTO): Promise<UserResponse>;
+    async create(username: string, email: string, passwordHash: string, emailVerified?: boolean): Promise<UserResponse>;
+    async create(usernameOrData: string | CreateUserDTO, email?: string, passwordHash?: string, emailVerified: boolean = false): Promise<UserResponse> {
+        let username: string;
+        let finalEmail: string;
+        let finalPasswordHash: string;
+        let verified: boolean = emailVerified;
 
-        // Hash password
-        const saltRounds = 10;
-        const password_hash = await bcrypt.hash(password, saltRounds);
+        // Handle both signatures
+        if (typeof usernameOrData === 'string') {
+            username = usernameOrData;
+            finalEmail = email!;
+            finalPasswordHash = passwordHash!;
+        } else {
+            username = usernameOrData.username;
+            finalEmail = usernameOrData.email;
+            // Hash password if it's the password string
+            const saltRounds = 10;
+            finalPasswordHash = await bcrypt.hash(usernameOrData.password, saltRounds);
+        }
 
         const query = `
-            INSERT INTO users (username, email, password_hash)
-            VALUES ($1, $2, $3)
-            RETURNING id, username, email, created_at
+            INSERT INTO users (username, email, password_hash, email_verified)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id, username, email, email_verified, created_at
         `;
 
-        const values = [username, email, password_hash];
+        const values = [username, finalEmail, finalPasswordHash, verified];
         const result = await pool.query(query, values);
 
         return result.rows[0];

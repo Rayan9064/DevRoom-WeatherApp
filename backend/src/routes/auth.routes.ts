@@ -7,12 +7,14 @@ import {
     logout,
     verifyEmail,
     resendVerification,
-    forgotPassword,
-    resetPassword,
+    sendOTP,
+    verifyOTP,
+    resetPasswordWithToken,
     registerValidation,
     loginValidation,
-    forgotPasswordValidation,
-    resetPasswordValidation
+    sendOTPValidation,
+    verifyOTPValidation,
+    resetPasswordWithTokenValidation
 } from '../controllers/auth.controller';
 import { authenticateToken } from '../middleware/auth';
 
@@ -39,10 +41,14 @@ router.get('/verify-email/:token', verifyEmail);
 // POST /api/auth/resend-verification - Resend verification email (protected)
 router.post('/resend-verification', authenticateToken, resendVerification);
 
-// POST /api/auth/forgot-password - Request password reset
-router.post('/forgot-password', forgotPasswordValidation, forgotPassword);
+// POST /api/auth/send-otp - Send OTP for registration or password reset
+router.post('/send-otp', sendOTPValidation, sendOTP);
 
-// POST /api/auth/reset-password - Reset password
-router.post('/reset-password', resetPasswordValidation, resetPassword);
+// POST /api/auth/verify-otp - Verify OTP
+router.post('/verify-otp', verifyOTPValidation, verifyOTP);
+
+// POST /api/auth/reset-password - Reset password with OTP-verified token
+router.post('/reset-password', resetPasswordWithTokenValidation, resetPasswordWithToken);
 
 export default router;
+
