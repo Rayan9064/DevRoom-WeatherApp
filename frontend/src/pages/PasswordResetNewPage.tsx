@@ -53,12 +53,15 @@ const PasswordResetNewPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            // Complete password reset by calling verifyPasswordResetOTP with newPassword
+            console.log('Submitting password reset:', { email, otp: otpCode, passwordLength: password.length });
+            // Complete password reset with the verified OTP
             await verifyPasswordResetOTP(email, otpCode, password);
             toast.success('Password reset successfully!');
             setTimeout(() => navigate('/login'), 2000);
         } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Failed to reset password');
+            console.error('Password reset error:', err.response?.data);
+            const errorMsg = err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || 'Failed to reset password';
+            toast.error(errorMsg);
         } finally {
             setIsSubmitting(false);
         }
