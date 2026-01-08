@@ -35,6 +35,54 @@ api.interceptors.response.use(
 );
 
 export const authService = {
+    async sendRegistrationOTP(email: string, username: string, password: string): Promise<ApiResponse<{ message: string }>> {
+        const response = await api.post<ApiResponse<{ message: string }>>('/auth/send-otp', {
+            email,
+            type: 'registration',
+            username,
+            password,
+        });
+        return response.data;
+    },
+
+    async verifyRegistrationOTP(email: string, otp: string): Promise<AuthResponse> {
+        const response = await api.post<AuthResponse>('/auth/verify-otp', {
+            email,
+            otp,
+            type: 'registration',
+        });
+        if (response.data.data?.token) {
+            localStorage.setItem('token', response.data.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        }
+        return response.data;
+    },
+
+    async sendPasswordResetOTP(email: string): Promise<ApiResponse<{ message: string }>> {
+        const response = await api.post<ApiResponse<{ message: string }>>('/auth/send-otp', {
+            email,
+            type: 'password_reset',
+        });
+        return response.data;
+    },
+
+    async verifyPasswordResetOTP(email: string, otp: string): Promise<ApiResponse<{ resetToken: string }>> {
+        const response = await api.post<ApiResponse<{ resetToken: string }>>('/auth/verify-otp', {
+            email,
+            otp,
+            type: 'password_reset',
+        });
+        return response.data;
+    },
+
+    async resetPasswordWithToken(resetToken: string, password: string): Promise<ApiResponse<void>> {
+        const response = await api.post<ApiResponse<void>>('/auth/reset-password', {
+            resetToken,
+            password,
+        });
+        return response.data;
+    },
+
     async register(username: string, email: string, password: string): Promise<AuthResponse> {
         const response = await api.post<AuthResponse>('/auth/register', {
             username,

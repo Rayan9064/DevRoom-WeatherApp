@@ -7,8 +7,10 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import RegistrationOTPPage from './pages/RegistrationOTPPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
+import PasswordResetOTPPage from './pages/PasswordResetOTPPage';
+import PasswordResetNewPage from './pages/PasswordResetNewPage';
 import EmailVerificationPage from './pages/EmailVerificationPage';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -39,8 +41,10 @@ function App() {
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/verify-registration-otp" element={<RegistrationOTPPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/verify-password-reset-otp" element={<PasswordResetOTPPage />} />
+              <Route path="/reset-password-new" element={<PasswordResetNewPage />} />
               <Route path="/verify-email" element={<EmailVerificationPage />} />
 
               {/* Protected Routes */}

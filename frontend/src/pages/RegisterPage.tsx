@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
+import '../styles/Auth.css';
 
 const RegisterPage: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ const RegisterPage: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { register } = useAuth();
+    const { sendRegistrationOTP } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -42,11 +43,13 @@ const RegisterPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            await register(username, email, password);
-            toast.success('Registration successful!');
-            navigate('/');
+            await sendRegistrationOTP(email, username, password);
+            toast.success('OTP sent to your email!');
+            navigate('/verify-registration-otp', {
+                state: { email, username, password }
+            });
         } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Failed to register');
+            toast.error(err.response?.data?.message || 'Failed to send OTP');
         } finally {
             setIsSubmitting(false);
         }

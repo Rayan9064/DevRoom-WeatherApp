@@ -14,6 +14,11 @@ interface AuthContextType {
     resendVerification: () => Promise<void>;
     forgotPassword: (email: string) => Promise<void>;
     resetPassword: (token: string, password: string) => Promise<void>;
+    sendRegistrationOTP: (email: string, username: string, password: string) => Promise<void>;
+    verifyRegistrationOTP: (email: string, otp: string) => Promise<void>;
+    sendPasswordResetOTP: (email: string) => Promise<void>;
+    verifyPasswordResetOTP: (email: string, otp: string) => Promise<string>;
+    resetPasswordWithToken: (resetToken: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -76,6 +81,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await authService.resetPassword(token, password);
     };
 
+    const sendRegistrationOTP = async (email: string, username: string, password: string) => {
+        await authService.sendRegistrationOTP(email, username, password);
+    };
+
+    const verifyRegistrationOTP = async (email: string, otp: string) => {
+        const response = await authService.verifyRegistrationOTP(email, otp);
+        if (response.data?.user) {
+            setUser(response.data.user);
+        }
+    };
+
+    const sendPasswordResetOTP = async (email: string) => {
+        await authService.sendPasswordResetOTP(email);
+    };
+
+    const verifyPasswordResetOTP = async (email: string, otp: string): Promise<string> => {
+        const response = await authService.verifyPasswordResetOTP(email, otp);
+        return response.data?.resetToken || '';
+    };
+
+    const resetPasswordWithToken = async (resetToken: string, password: string) => {
+        await authService.resetPasswordWithToken(resetToken, password);
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -90,6 +119,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 resendVerification,
                 forgotPassword,
                 resetPassword,
+                sendRegistrationOTP,
+                verifyRegistrationOTP,
+                sendPasswordResetOTP,
+                verifyPasswordResetOTP,
+                resetPasswordWithToken,
             }}
         >
             {children}

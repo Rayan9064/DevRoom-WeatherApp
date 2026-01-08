@@ -7,9 +7,8 @@ import '../styles/Auth.css';
 const ForgotPasswordPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [emailSent, setEmailSent] = useState(false);
 
-    const { forgotPassword } = useAuth();
+    const { sendPasswordResetOTP } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -17,40 +16,17 @@ const ForgotPasswordPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            await forgotPassword(email);
-            toast.success('Password reset link sent to your email!');
-            setEmailSent(true);
-            setTimeout(() => navigate('/login'), 3000);
+            await sendPasswordResetOTP(email);
+            toast.success('OTP sent to your email!');
+            navigate('/verify-password-reset-otp', {
+                state: { email }
+            });
         } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Failed to send reset link');
+            toast.error(err.response?.data?.message || 'Failed to send OTP');
         } finally {
             setIsSubmitting(false);
         }
     };
-
-    if (emailSent) {
-        return (
-            <div className="auth-container fade-in">
-                <div className="auth-card card glass">
-                    <div className="auth-header">
-                        <h1 className="gradient-text">Check Your Email</h1>
-                        <p>We've sent a password reset link to {email}</p>
-                    </div>
-
-                    <div className="auth-message success-message">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        <p>Please check your email and click the reset link to proceed.</p>
-                    </div>
-
-                    <div className="auth-footer">
-                        <p>Redirecting to login...</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="auth-container fade-in">
