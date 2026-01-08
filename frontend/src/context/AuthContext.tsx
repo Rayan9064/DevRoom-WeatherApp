@@ -7,8 +7,13 @@ interface AuthContextType {
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string) => Promise<void>;
-    logout: () => void;
+    logout: () => Promise<void>;
     loading: boolean;
+    refreshToken: () => Promise<void>;
+    verifyEmail: (token: string) => Promise<void>;
+    resendVerification: () => Promise<void>;
+    forgotPassword: (email: string) => Promise<void>;
+    resetPassword: (token: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,9 +45,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    const logout = () => {
-        authService.logout();
-        setUser(null);
+    const logout = async () => {
+        try {
+            await authService.logout();
+        } finally {
+            setUser(null);
+        }
+    };
+
+    const refreshToken = async () => {
+        const response = await authService.refreshToken();
+        if (response.data?.user) {
+            setUser(response.data.user);
+        }
+    };
+
+    const verifyEmail = async (token: string) => {
+        await authService.verifyEmail(token);
+    };
+
+    const resendVerification = async () => {
+        await authService.resendVerification();
+    };
+
+    const forgotPassword = async (email: string) => {
+        await authService.forgotPassword(email);
+    };
+
+    const resetPassword = async (token: string, password: string) => {
+        await authService.resetPassword(token, password);
     };
 
     return (
@@ -54,6 +85,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 register,
                 logout,
                 loading,
+                refreshToken,
+                verifyEmail,
+                resendVerification,
+                forgotPassword,
+                resetPassword,
             }}
         >
             {children}

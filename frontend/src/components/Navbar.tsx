@@ -7,10 +7,14 @@ const Navbar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const { user, logout } = useAuth();
 
-    const handleLogout = () => {
-        logout();
-        toast.info('See you soon! 👋');
-        setIsMenuOpen(false);
+    const handleLogout = async () => {
+        try {
+            await logout();
+            toast.info('See you soon! 👋');
+            setIsMenuOpen(false);
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Logout failed');
+        }
     };
 
     return (

@@ -1,27 +1,62 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import '../styles/Auth.css';
 
-const LoginPage: React.FC = () => {
-    const [email, setEmail] = useState('');
+const ResetPasswordPage: React.FC = () => {
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { login } = useAuth();
+    const { resetPassword } = useAuth();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const token = searchParams.get('token');
+
+    if (!token) {
+        return (
+            <div className="auth-container fade-in">
+                <div className="auth-card card glass">
+                    <div className="auth-header">
+                        <h1 className="gradient-text">Invalid Link</h1>
+                        <p>The password reset link is missing or invalid.</p>
+                    </div>
+                    <div className="auth-footer">
+                        <p><a href="/forgot-password" className="auth-link">Request a new link</a></p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Password strength validation
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+
+        if (password.length < 6 || !hasUpperCase || !hasLowerCase || !hasNumber) {
+            toast.error('Password must be at least 6 characters and include uppercase, lowercase, and a number');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            toast.error('Passwords do not match');
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
-            await login(email, password);
-            toast.success('Welcome back!');
-            navigate('/');
+            await resetPassword(token, password);
+            toast.success('Password reset successfully!');
+            setTimeout(() => navigate('/login'), 2000);
         } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Failed to login');
+            toast.error(err.response?.data?.message || 'Failed to reset password');
         } finally {
             setIsSubmitting(false);
         }
@@ -31,26 +66,13 @@ const LoginPage: React.FC = () => {
         <div className="auth-container fade-in">
             <div className="auth-card card glass">
                 <div className="auth-header">
-                    <h1 className="gradient-text">Welcome Back</h1>
-                    <p>Login to continue your weather journey</p>
+                    <h1 className="gradient-text">Reset Password</h1>
+                    <p>Enter your new password</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <label className="input-label" htmlFor="email">Email Address</label>
-                        <input
-                            id="email"
-                            type="email"
-                            className="input"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
-                            required
-                        />
-                    </div>
-
-                    <div className="input-group">
-                        <label className="input-label" htmlFor="password">Password</label>
+                        <label className="input-label" htmlFor="password">New Password</label>
                         <div className="password-input-wrapper">
                             <input
                                 id="password"
@@ -58,8 +80,9 @@ const LoginPage: React.FC = () => {
                                 className="input"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter your password"
+                                placeholder="Enter your new password"
                                 required
+                                minLength={6}
                             />
                             <button
                                 type="button"
@@ -80,9 +103,20 @@ const LoginPage: React.FC = () => {
                                 )}
                             </button>
                         </div>
-                        <div style={{ textAlign: 'right', marginTop: '8px' }}>
-                            <Link to="/forgot-password" className="auth-link">Forgot password?</Link>
-                        </div>
+                    </div>
+
+                    <div className="input-group">
+                        <label className="input-label" htmlFor="confirmPassword">Confirm Password</label>
+                        <input
+                            id="confirmPassword"
+                            type="password"
+                            className="input"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Repeat your password"
+                            required
+                            minLength={6}
+                        />
                     </div>
 
                     <button
@@ -90,16 +124,12 @@ const LoginPage: React.FC = () => {
                         className="btn btn-primary btn-block"
                         disabled={isSubmitting}
                     >
-                        {isSubmitting ? <div className="spinner"></div> : 'Login'}
+                        {isSubmitting ? <div className="spinner"></div> : 'Reset Password'}
                     </button>
                 </form>
-
-                <div className="auth-footer">
-                    <p>Don't have an account? <Link to="/register" className="auth-link">Register here</Link></p>
-                </div>
             </div>
         </div>
     );
 };
 
-export default LoginPage;
+export default ResetPasswordPage;

@@ -7,6 +7,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import EmailVerificationPage from './pages/EmailVerificationPage';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/Auth.css'; // Import auth styles globallu
@@ -36,6 +39,9 @@ function App() {
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/verify-email" element={<EmailVerificationPage />} />
 
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
