@@ -37,7 +37,16 @@ class EmailService {
                 socketTimeout: 30000, // 30 seconds socket timeout
             });
 
-            logger.info('✅ Email service initialized with Gmail');
+            // Verify SMTP connection on initialization
+            this.transporter.verify((error, success) => {
+                if (error) {
+                    logger.error('❌ SMTP connection verification failed:', error);
+                    logger.warn('⚠️ Email service will not work - check EMAIL_USER and EMAIL_PASSWORD');
+                    logger.warn('⚠️ Note: Some hosting providers (like Render free tier) may block SMTP ports');
+                } else {
+                    logger.info('✅ Email service initialized and verified with Gmail');
+                }
+            });
         } catch (error) {
             logger.error('❌ Failed to initialize email service:', error);
         }
