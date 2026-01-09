@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
+import OfflineBanner from './components/OfflineBanner';
 import Dashboard from './pages/Dashboard';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -34,6 +35,7 @@ function App() {
       <ErrorBoundary>
         <div className="app-wrapper">
           <ToastContainer position="top-right" theme="dark" />
+          <OfflineBanner />
           <Navbar />
           <main>
             <Routes>

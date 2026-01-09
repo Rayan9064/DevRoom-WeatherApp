@@ -3,6 +3,9 @@ import { weatherService } from '../services/weatherService';
 import { toast } from 'react-toastify';
 import { favoritesService } from '../services/favoritesService';
 import WeatherCard from '../components/WeatherCard';
+import WeatherCardSkeleton from '../components/WeatherCardSkeleton';
+import FavoritesSkeleton from '../components/FavoritesSkeleton';
+import { offlineStorage } from '../utils/offlineStorage';
 import type { WeatherData, Favorite } from '../types';
 import '../styles/Dashboard.css';
 
@@ -11,6 +14,8 @@ const Dashboard: React.FC = () => {
     const [weather, setWeather] = useState<WeatherData | null>(null);
     const [favorites, setFavorites] = useState<Favorite[]>([]);
     const [loading, setLoading] = useState(false);
+    const [favoritesLoading, setFavoritesLoading] = useState(true);
+    const [showFavorites, setShowFavorites] = useState(false);
 
     // Initial favorites load
     useEffect(() => {
@@ -18,6 +23,7 @@ const Dashboard: React.FC = () => {
     }, []);
 
     const loadFavorites = async () => {
+        setFavoritesLoading(true);
         try {
             const response = await favoritesService.getFavorites();
             if (response.data?.favorites) {
@@ -25,6 +31,8 @@ const Dashboard: React.FC = () => {
             }
         } catch (err) {
             console.error('Failed to load favorites', err);
+        } finally {
+            setFavoritesLoading(false);
         }
     };
 
@@ -38,10 +46,24 @@ const Dashboard: React.FC = () => {
             const response = await weatherService.getWeatherByCity(city);
             if (response.data) {
                 setWeather(response.data);
+                // Save to offline storage
+                offlineStorage.saveWeatherData(city, response.data);
             }
         } catch (err: any) {
-            toast.error(err.response?.data?.message || 'City not found');
-            setWeather(null);
+            // Try offline cache if request fails
+            if (!navigator.onLine) {
+                const cachedData = offlineStorage.getWeatherData(city);
+                if (cachedData) {
+                    setWeather(cachedData);
+                    toast.info('Showing cached data (offline mode) 📡');
+                } else {
+                    toast.error('No cached data available for this city');
+                    setWeather(null);
+                }
+            } else {
+                toast.error(err.response?.data?.message || 'City not found');
+                setWeather(null);
+            }
         } finally {
             setLoading(false);
         }
@@ -50,14 +72,28 @@ const Dashboard: React.FC = () => {
     const handleFavoriteClick = async (favCity: string) => {
         setCity(favCity);
         setLoading(true);
+        setShowFavorites(false); // Close favorites panel when a city is selected
 
         try {
             const response = await weatherService.getWeatherByCity(favCity);
             if (response.data) {
                 setWeather(response.data);
+                // Save to offline storage
+                offlineStorage.saveWeatherData(favCity, response.data);
             }
         } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Failed to load weather data');
+            // Try offline cache if request fails
+            if (!navigator.onLine) {
+                const cachedData = offlineStorage.getWeatherData(favCity);
+                if (cachedData) {
+                    setWeather(cachedData);
+                    toast.info('Showing cached data (offline mode) 📡');
+                } else {
+                    toast.error('No cached data available for this city');
+                }
+            } else {
+                toast.error(err.response?.data?.message || 'Failed to load weather data');
+            }
         } finally {
             setLoading(false);
         }
@@ -111,40 +147,71 @@ const Dashboard: React.FC = () => {
                 </form>
             </div>
 
+            {/* Mobile Favorites Toggle Button */}
+            <button 
+                className="favorites-toggle-btn glass"
+                onClick={() => setShowFavorites(!showFavorites)}
+                aria-label="Toggle favorites"
+            >
+                <span className="favorites-icon">⭐</span>
+                <span className="favorites-count">{favorites.length}</span>
+            </button>
+
+            {/* Overlay for mobile when favorites are open */}
+            {showFavorites && (
+                <div 
+                    className="favorites-overlay"
+                    onClick={() => setShowFavorites(false)}
+                />
+            )}
+
             <div className="dashboard-content">
                 <div className="main-weather">
-                    {weather ? (
+                    {loading ? (
+                        <WeatherCardSkeleton />
+                    ) : weather ? (
                         <WeatherCard
                             weather={weather}
                             isFavorite={favorites.some(f => f.city_name.toLowerCase() === weather.city.toLowerCase())}
                             onToggleFavorite={toggleFavorite}
                         />
                     ) : (
-                        !loading && (
-                            <div className="empty-state glass">
-                                <div className="empty-icon">🌤️</div>
-                                <h2>Explore the Weather</h2>
-                                <p>Search for a city or select a favorite to get started</p>
-                            </div>
-                        )
+                        <div className="empty-state glass">
+                            <div className="empty-icon">🌤️</div>
+                            <h2>Explore the Weather</h2>
+                            <p>Search for a city or select a favorite to get started</p>
+                        </div>
                     )}
                 </div>
 
-                <div className="favorites-sidebar glass">
-                    <h3>Favorite Cities</h3>
-                    {favorites.length === 0 ? (
-                        <p className="no-favorites">No favorites yet. Add some!</p>
-                    ) : (
-                        <ul className="favorites-list">
-                            {favorites.map(fav => (
-                                <li key={fav.id} className="favorite-item" onClick={() => handleFavoriteClick(fav.city_name)}>
-                                    <span className="fav-city">{fav.city_name}</span>
-                                    <span className="fav-country">{fav.country_code}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
+                {favoritesLoading ? (
+                    <FavoritesSkeleton />
+                ) : (
+                    <div className={`favorites-sidebar glass ${showFavorites ? 'show' : ''}`}>
+                        <div className="favorites-header">
+                            <h3>Favorite Cities</h3>
+                            <button 
+                                className="favorites-close-btn"
+                                onClick={() => setShowFavorites(false)}
+                                aria-label="Close favorites"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        {favorites.length === 0 ? (
+                            <p className="no-favorites">No favorites yet. Add some!</p>
+                        ) : (
+                            <ul className="favorites-list">
+                                {favorites.map(fav => (
+                                    <li key={fav.id} className="favorite-item" onClick={() => handleFavoriteClick(fav.city_name)}>
+                                        <span className="fav-city">{fav.city_name}</span>
+                                        <span className="fav-country">{fav.country_code}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
