@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
+import Logo from '../components/Logo';
 import '../styles/Auth.css';
 
 const RegisterPage: React.FC = () => {
@@ -43,7 +44,7 @@ const RegisterPage: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            await sendRegistrationOTP(email);
+            await sendRegistrationOTP(email, username, password);
             toast.success('OTP sent to your email!');
             navigate('/verify-registration-otp', {
                 state: { email, username, password }
@@ -57,74 +58,77 @@ const RegisterPage: React.FC = () => {
 
     return (
         <div className="auth-container fade-in">
-            <div className="auth-card card glass">
+            <div className="auth-card register-card card glass">
+                <Logo size="large" className="centered" />
                 <div className="auth-header">
                     <h1 className="gradient-text">Create Account</h1>
                     <p>Join us to track weather globally</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <label className="input-label" htmlFor="username">Username</label>
-                        <input
-                            id="username"
-                            type="text"
-                            className="input"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Choose a username"
-                            required
-                            minLength={3}
-                        />
-                    </div>
+                    <div className="register-form-grid">
+                        <div className="input-group">
+                            <label className="input-label" htmlFor="username">Username</label>
+                            <input
+                                id="username"
+                                type="text"
+                                className="input"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Choose a username"
+                                required
+                                minLength={3}
+                            />
+                        </div>
 
-                    <div className="input-group">
-                        <label className="input-label" htmlFor="email">Email Address</label>
-                        <input
-                            id="email"
-                            type="email"
-                            className="input"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
-                            required
-                        />
-                    </div>
+                        <div className="input-group">
+                            <label className="input-label" htmlFor="email">Email Address</label>
+                            <input
+                                id="email"
+                                type="email"
+                                className="input"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                required
+                            />
+                        </div>
 
-                    <div className="input-group">
-                        <label className="input-label" htmlFor="password">Password</label>
-                        <input
-                            id="password"
-                            type="password"
-                            className="input"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Create a strong password"
-                            required
-                            minLength={6}
-                        />
-                    </div>
+                        <div className="input-group">
+                            <label className="input-label" htmlFor="password">Password</label>
+                            <input
+                                id="password"
+                                type="password"
+                                className="input"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Create a strong password"
+                                required
+                                minLength={6}
+                            />
+                        </div>
 
-                    <div className="input-group">
-                        <label className="input-label" htmlFor="confirmPassword">Confirm Password</label>
-                        <input
-                            id="confirmPassword"
-                            type="password"
-                            className="input"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Repeat your password"
-                            required
-                        />
-                    </div>
+                        <div className="input-group">
+                            <label className="input-label" htmlFor="confirmPassword">Confirm Password</label>
+                            <input
+                                id="confirmPassword"
+                                type="password"
+                                className="input"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="Repeat your password"
+                                required
+                            />
+                        </div>
 
-                    <button
-                        type="submit"
-                        className="btn btn-primary btn-block"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? <div className="spinner"></div> : 'Register'}
-                    </button>
+                        <button
+                            type="submit"
+                            className="btn btn-primary btn-block"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? <div className="spinner"></div> : 'Register'}
+                        </button>
+                    </div>
                 </form>
 
                 <div className="auth-footer">

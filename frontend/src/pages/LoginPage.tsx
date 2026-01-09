@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import Logo from '../components/Logo';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -30,6 +31,7 @@ const LoginPage: React.FC = () => {
     return (
         <div className="auth-container fade-in">
             <div className="auth-card card glass">
+                <Logo size="large" className="centered" />
                 <div className="auth-header">
                     <h1 className="gradient-text">Welcome Back</h1>
                     <p>Login to continue your weather journey</p>
@@ -37,14 +39,14 @@ const LoginPage: React.FC = () => {
 
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <label className="input-label" htmlFor="email">Email Address</label>
+                        <label className="input-label" htmlFor="email">Email or Username</label>
                         <input
                             id="email"
-                            type="email"
+                            type="text"
                             className="input"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
+                            placeholder="Enter your email or username"
                             required
                         />
                     </div>
