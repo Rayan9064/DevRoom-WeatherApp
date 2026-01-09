@@ -21,7 +21,8 @@ const Navbar: React.FC = () => {
         <nav className="navbar">
             <div className="container navbar-content">
                 <div className="navbar-brand">
-                    <h1 className="gradient-text">☁️ WeatherDash</h1>
+                    <img src="/icons/icon-96x96.png" alt="Weather Dashboard" className="navbar-logo" />
+                    <h1 className="gradient-text">WeatherDash</h1>
                 </div>
 
                 {user && (

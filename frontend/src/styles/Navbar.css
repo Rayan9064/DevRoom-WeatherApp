@@ -5,13 +5,31 @@
     background: rgba(var(--primary-hue), 20%, 10%, 0.8);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
-    padding: 1rem 0;
+    padding: 0.875rem 0;
 }
 
 .navbar-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navbar-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.navbar-logo:hover {
+    transform: scale(1.05);
 }
 
 .navbar-brand h1 {
@@ -82,11 +100,12 @@
         top: 100%;
         left: 0;
         right: 0;
-        background: rgba(var(--primary-hue), 20%, 10%, 0.95);
-        backdrop-filter: blur(12px);
+        background: linear-gradient(135deg, rgba(20, 30, 48, 0.98), rgba(36, 59, 85, 0.98));
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
         padding: 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         z-index: 101;
         animation: slideDown 0.3s ease-out;
     }
@@ -120,6 +139,42 @@
         cursor: pointer;
         padding: 0.5rem;
         z-index: 102;
+    }
+
+    .navbar {
+        padding: 0.75rem 0;
+    }
+
+    .navbar-brand h1 {
+        font-size: 1.35rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0.65rem 0;
+    }
+
+    .navbar-brand h1 {
+        font-size: 1.2rem;
+    }
+
+    .navbar-actions.mobile-open {
+        padding: 1.25rem;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    .user-name {
+        font-size: 0.85rem;
+    }
+
+    .user-email {
+        font-size: 0.7rem;
     }
 }
 
