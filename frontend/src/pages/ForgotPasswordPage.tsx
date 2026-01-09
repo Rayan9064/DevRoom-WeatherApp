@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import Logo from '../components/Logo';
 import '../styles/Auth.css';
 
 const ForgotPasswordPage: React.FC = () => {
@@ -31,6 +32,7 @@ const ForgotPasswordPage: React.FC = () => {
     return (
         <div className="auth-container fade-in">
             <div className="auth-card card glass">
+                <Logo size="large" className="centered" />
                 <div className="auth-header">
                     <h1 className="gradient-text">Forgot Password?</h1>
                     <p>Enter your email to receive a password reset link</p>

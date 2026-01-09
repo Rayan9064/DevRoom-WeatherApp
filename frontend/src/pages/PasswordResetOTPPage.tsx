@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import Logo from '../components/Logo';
 import '../styles/Auth.css';
 
 const PasswordResetOTPPage: React.FC = () => {
@@ -61,6 +62,7 @@ const PasswordResetOTPPage: React.FC = () => {
     return (
         <div className="auth-container fade-in">
             <div className="auth-card card glass">
+                <Logo size="large" className="centered" />
                 <div className="auth-header">
                     <h1 className="gradient-text">Verify OTP</h1>
                     <p>We've sent a 6-digit OTP to {email}</p>

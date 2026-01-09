@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import Logo from '../components/Logo';
 import '../styles/Auth.css';
 
 const PasswordResetNewPage: React.FC = () => {
@@ -70,6 +71,7 @@ const PasswordResetNewPage: React.FC = () => {
     return (
         <div className="auth-container fade-in">
             <div className="auth-card card glass">
+                <Logo size="large" className="centered" />
                 <div className="auth-header">
                     <h1 className="gradient-text">Set New Password</h1>
                     <p>Create a strong password for your account</p>
