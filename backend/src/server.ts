@@ -61,7 +61,7 @@ app.use('/api/auth/register', authLimiter);
 
 // CORS Configuration
 const allowedOrigins = process.env.NODE_ENV === 'production'
-    ? [process.env.CORS_ORIGIN || 'http://localhost:5173']
+    ? (process.env.CORS_ORIGIN || 'http://localhost:5173').split(',').map(origin => origin.trim())
     : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000'];
 
 app.use(cors({
@@ -74,7 +74,7 @@ app.use(cors({
     },
     credentials: true,
     optionsSuccessStatus: 200,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
