@@ -40,9 +40,8 @@ export const registerValidation = [
 export const loginValidation = [
     body('email')
         .trim()
-        .isEmail()
-        .withMessage('Please provide a valid email address')
-        .normalizeEmail(),
+        .notEmpty()
+        .withMessage('Email or username is required'),
 
     body('password')
         .notEmpty()
@@ -132,13 +131,24 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         }
 
         const { email, password } = req.body;
+        const loginIdentifier = email.trim();
 
-        // Find user by email
-        const user = await UserModel.findByEmail(email);
+        // Try to find user by email first, then by username
+        let user = null;
+        
+        // Check if it's an email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(loginIdentifier)) {
+            user = await UserModel.findByEmail(loginIdentifier);
+        } else {
+            // If not email format, treat as username
+            user = await UserModel.findByUsername(loginIdentifier);
+        }
+
         if (!user) {
             res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'Invalid username/email or password'
             });
             return;
         }
@@ -148,7 +158,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         if (!isPasswordValid) {
             res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'Invalid username/email or password'
             });
             return;
         }
