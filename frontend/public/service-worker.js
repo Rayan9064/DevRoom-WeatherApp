@@ -1,5 +1,5 @@
-const CACHE_NAME = 'weather-dashboard-v1';
-const RUNTIME_CACHE = 'weather-runtime-v1';
+const CACHE_NAME = 'weather-dashboard-v2';
+const RUNTIME_CACHE = 'weather-runtime-v2';
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -45,28 +45,29 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip cross-origin requests
+  // For cross-origin requests (API calls), use network-only strategy
   if (url.origin !== location.origin) {
-    // For API requests, use network first with cache fallback
-    if (url.pathname.startsWith('/api/')) {
-      event.respondWith(
-        fetch(request)
-          .then((response) => {
-            // Clone the response before caching
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Only cache successful responses
+          if (response.ok && request.method === 'GET') {
             const responseClone = response.clone();
             caches.open(RUNTIME_CACHE).then((cache) => {
               cache.put(request, responseClone);
             });
-            return response;
-          })
-          .catch(() => {
-            // If network fails, try cache
+          }
+          return response;
+        })
+        .catch(() => {
+          // If network fails, try cache for GET requests only
+          if (request.method === 'GET') {
             return caches.match(request);
-          })
-      );
-      return;
-    }
-    // Let other cross-origin requests pass through
+          }
+          // For POST/PUT/DELETE, propagate the error
+          return Promise.reject(new Error('Network request failed'));
+        })
+    );
     return;
   }
 
