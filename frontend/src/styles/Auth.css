@@ -1,31 +1,35 @@
 .auth-container {
-    min-height: calc(100vh - 80px);
-    /* Adjust based on navbar height */
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 2rem 1rem;
 }
 
 .auth-card {
     width: 100%;
     max-width: 480px;
-    padding: 2.5rem;
+    padding: 2rem 1.5rem;
+}
+
+/* Registration page specific - wider card for double column */
+.auth-card.register-card {
+    max-width: 700px;
 }
 
 .auth-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .auth-header h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
     margin-bottom: 0.5rem;
 }
 
 .auth-header p {
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .btn-block {
@@ -36,11 +40,65 @@
 
 .auth-footer {
     text-align: center;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1.5rem 1rem;
+    }
+    
+    .auth-card.register-card {
+        max-width: 600px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1rem 0.75rem;
+    }
+
+    .auth-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .auth-card.register-card {
+        max-width: 100%;
+    }
+
+    .auth-header {
+        margin-bottom: 1.25rem;
+    }
+
+    .auth-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .auth-header p {
+        font-size: 0.85rem;
+    }
+
+    .auth-footer {
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .auth-card {
+        padding: 1.25rem 0.875rem;
+    }
+
+    .auth-header h1 {
+        font-size: 1.35rem;
+    }
 }
 
 .auth-link {
@@ -53,6 +111,26 @@
 .auth-link:hover {
     color: var(--accent-secondary);
     text-decoration: underline;
+}
+
+/* Registration Form Grid Layout */
+.register-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+/* Double column layout for larger screens */
+@media (min-width: 640px) {
+    .register-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0 1rem;
+    }
+    
+    /* Make submit button span full width */
+    .register-form-grid .btn-block {
+        grid-column: 1 / -1;
+    }
 }
 
 /* Password Toggle */
