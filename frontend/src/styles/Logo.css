@@ -1,0 +1,85 @@
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.logo-icon {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.logo-icon:hover {
+    transform: scale(1.05) rotate(5deg);
+}
+
+.logo-text {
+    text-align: left;
+}
+
+.logo-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.logo-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0 0;
+    font-weight: 500;
+}
+
+/* Size variations */
+.logo-container.small .logo-title {
+    font-size: 1.25rem;
+}
+
+.logo-container.small .logo-subtitle {
+    font-size: 0.65rem;
+}
+
+.logo-container.large .logo-title {
+    font-size: 2.5rem;
+}
+
+.logo-container.large .logo-subtitle {
+    font-size: 0.9rem;
+}
+
+/* Centered version for auth pages */
+.logo-container.centered {
+    flex-direction: column;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logo-container.centered .logo-text {
+    text-align: center;
+}
+
+.logo-container.centered .logo-icon {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .logo-title {
+        font-size: 1.5rem;
+    }
+
+    .logo-subtitle {
+        font-size: 0.7rem;
+    }
+
+    .logo-container.large .logo-title {
+        font-size: 2rem;
+    }
+}
