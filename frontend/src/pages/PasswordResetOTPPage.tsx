@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import Logo from '../components/Logo';
 import '../styles/Auth.css';
 
 const PasswordResetOTPPage: React.FC = () => {
     const [otp, setOtp] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
     const [canResend, setCanResend] = useState(false);
 
-    const { verifyPasswordResetOTP } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const email = (location.state as any)?.email;
@@ -98,9 +95,9 @@ const PasswordResetOTPPage: React.FC = () => {
                     <button
                         type="submit"
                         className="btn btn-primary btn-block"
-                        disabled={isSubmitting || timeLeft === 0}
+                        disabled={timeLeft === 0}
                     >
-                        {isSubmitting ? <div className="spinner"></div> : 'Verify OTP'}
+                        Verify OTP
                     </button>
                 </form>
 
