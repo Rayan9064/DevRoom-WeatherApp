@@ -34,7 +34,6 @@ const LoginPage: React.FC = () => {
                 <Logo size="large" className="centered" />
                 <div className="auth-header">
                     <h1 className="gradient-text">Welcome Back</h1>
-                    <p>Login to continue your weather journey</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -46,7 +45,7 @@ const LoginPage: React.FC = () => {
                             className="input"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email or username"
+                            placeholder="Email or username"
                             required
                         />
                     </div>
@@ -60,7 +59,7 @@ const LoginPage: React.FC = () => {
                                 className="input"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter your password"
+                                placeholder="Password"
                                 required
                             />
                             <button

@@ -62,7 +62,6 @@ const RegisterPage: React.FC = () => {
                 <Logo size="large" className="centered" />
                 <div className="auth-header">
                     <h1 className="gradient-text">Create Account</h1>
-                    <p>Join us to track weather globally</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -75,7 +74,7 @@ const RegisterPage: React.FC = () => {
                                 className="input"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Choose a username"
+                                placeholder="Username"
                                 required
                                 minLength={3}
                             />
@@ -89,7 +88,7 @@ const RegisterPage: React.FC = () => {
                                 className="input"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
+                                placeholder="Email"
                                 required
                             />
                         </div>
@@ -102,7 +101,7 @@ const RegisterPage: React.FC = () => {
                                 className="input"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Create a strong password"
+                                placeholder="Password"
                                 required
                                 minLength={6}
                             />
@@ -116,7 +115,7 @@ const RegisterPage: React.FC = () => {
                                 className="input"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="Repeat your password"
+                                placeholder="Confirm Password"
                                 required
                             />
                         </div>
