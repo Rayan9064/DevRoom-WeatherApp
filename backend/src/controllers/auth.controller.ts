@@ -412,18 +412,14 @@ export const sendOTP = async (req: Request, res: Response): Promise<void> => {
                     logger.info(`✅ OTP email sent successfully to ${email}`);
                 } else {
                     logger.warn(`⚠️ Failed to send OTP email to ${email}`);
-                    // Log OTP for development/testing
-                    if (process.env.NODE_ENV !== 'production') {
-                        logger.info(`🔑 [DEV MODE] OTP for ${email}: ${otp}`);
-                    }
+                    // Log OTP when email fails (for debugging and fallback)
+                    logger.info(`🔑 [FALLBACK] OTP for ${email}: ${otp}`);
                 }
             })
             .catch((error) => {
                 logger.error(`❌ Error sending OTP email to ${email}:`, error);
-                // Log OTP for development/testing
-                if (process.env.NODE_ENV !== 'production') {
-                    logger.info(`🔑 [DEV MODE] OTP for ${email}: ${otp}`);
-                }
+                // Log OTP when error occurs (for debugging and fallback)
+                logger.info(`🔑 [FALLBACK] OTP for ${email}: ${otp}`);
             });
 
         // Respond immediately without waiting for email
