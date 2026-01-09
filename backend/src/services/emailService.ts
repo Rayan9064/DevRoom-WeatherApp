@@ -25,13 +25,16 @@ class EmailService {
         try {
             const port = parseInt(process.env.EMAIL_PORT || '587');
             
-            // Create reusable transporter
+            // Create reusable transporter with timeout settings
             this.transporter = nodemailer.createTransport({
                 service: 'gmail', // Use Gmail service for simpler configuration
                 auth: {
                     user: process.env.EMAIL_USER,
                     pass: process.env.EMAIL_PASSWORD,
                 },
+                connectionTimeout: 10000, // 10 seconds connection timeout
+                greetingTimeout: 10000, // 10 seconds greeting timeout
+                socketTimeout: 30000, // 30 seconds socket timeout
             });
 
             logger.info('✅ Email service initialized with Gmail');

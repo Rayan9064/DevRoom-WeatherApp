@@ -405,11 +405,18 @@ export const sendOTP = async (req: Request, res: Response): Promise<void> => {
             ? username 
             : (await UserModel.findByEmail(email))?.username || 'User';
         
-        await emailService.sendOTPEmail(email, userForEmail, otp, type);
+        const emailSent = await emailService.sendOTPEmail(email, userForEmail, otp, type);
+        
+        // If email service is disabled or fails, log OTP for development
+        if (!emailSent && process.env.NODE_ENV === 'development') {
+            logger.info(`🔑 [DEV MODE] OTP for ${email}: ${otp}`);
+        }
 
         res.status(200).json({
             success: true,
-            message: 'OTP sent to your email address'
+            message: emailSent 
+                ? 'OTP sent to your email address' 
+                : 'OTP created (email service unavailable - check server logs in development)'
         });
     } catch (error) {
         logger.error('Send OTP error:', error);

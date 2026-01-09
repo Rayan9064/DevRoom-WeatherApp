@@ -24,6 +24,11 @@ validateEnv();
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy - required for Render and other cloud platforms
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
+
 // Security Middleware
 app.use(helmet({
     contentSecurityPolicy: {
@@ -44,14 +49,16 @@ const limiter = rateLimit({
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { xForwardedForHeader: false }, // Disable strict validation in production
 });
 
 // Stricter rate limit for auth endpoints
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 requests per windowMs
+    max: 10, // Increased from 5 to 10 for better UX with retries
     skipSuccessfulRequests: true,
-    message: 'Too many authentication attempts, please try again later.'
+    message: 'Too many authentication attempts, please try again later.',
+    validate: { xForwardedForHeader: false }, // Disable strict validation in production
 });
 
 // Apply rate limiting
