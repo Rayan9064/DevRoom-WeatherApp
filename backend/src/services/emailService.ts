@@ -1,88 +1,65 @@
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 import logger from '../config/logger';
 
-interface EmailOptions {
-    to: string;
-    subject: string;
-    html: string;
-}
-
 class EmailService {
-    private transporter: nodemailer.Transporter | null = null;
+    private isConfigured: boolean = false;
 
     constructor() {
         this.initialize();
     }
 
     private initialize() {
-        const emailEnabled = process.env.EMAIL_ENABLED === 'true';
+        const apiKey = process.env.SENDGRID_API_KEY;
         
-        if (!emailEnabled) {
-            logger.info('📧 Email service is disabled (set EMAIL_ENABLED=true to enable)');
+        if (!apiKey) {
+            logger.warn('📧 SendGrid API key not configured - email service disabled');
+            logger.info('💡 Set SENDGRID_API_KEY environment variable to enable emails');
             return;
         }
 
         try {
-            const port = parseInt(process.env.EMAIL_PORT || '587');
-            
-            // Create reusable transporter with timeout settings
-            this.transporter = nodemailer.createTransport({
-                service: 'gmail', // Use Gmail service for simpler configuration
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASSWORD,
-                },
-                connectionTimeout: 10000, // 10 seconds connection timeout
-                greetingTimeout: 10000, // 10 seconds greeting timeout
-                socketTimeout: 30000, // 30 seconds socket timeout
-            });
-
-            // Verify SMTP connection on initialization
-            this.transporter.verify((error, success) => {
-                if (error) {
-                    logger.error('❌ SMTP connection verification failed:', error);
-                    logger.warn('⚠️ Email service will not work - check EMAIL_USER and EMAIL_PASSWORD');
-                    logger.warn('⚠️ Note: Some hosting providers (like Render free tier) may block SMTP ports');
-                } else {
-                    logger.info('✅ Email service initialized and verified with Gmail');
-                }
-            });
+            sgMail.setApiKey(apiKey);
+            this.isConfigured = true;
+            logger.info('✅ Email service initialized with SendGrid');
         } catch (error) {
-            logger.error('❌ Failed to initialize email service:', error);
+            logger.error('❌ Failed to initialize SendGrid:', error);
         }
     }
 
     /**
-     * Send email
+     * Send email using SendGrid
      */
-    async sendEmail(options: EmailOptions): Promise<boolean> {
-        if (!this.transporter) {
-            logger.warn('Email service not configured, email not sent');
-            // In development, log the email content
-            if (process.env.NODE_ENV === 'development') {
-                logger.info('📧 [DEV MODE] Email would be sent:', options);
-            }
+    private async sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+        if (!this.isConfigured) {
+            logger.warn('📧 Email service not configured - email not sent');
             return false;
         }
 
         try {
-            const info = await this.transporter.sendMail({
-                from: `"${process.env.EMAIL_FROM_NAME || 'Weather Dashboard'}" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
-                to: options.to,
-                subject: options.subject,
-                html: options.html,
-            });
+            const msg = {
+                to,
+                from: {
+                    email: process.env.EMAIL_FROM || 'noreply@weatherdashboard.com',
+                    name: process.env.EMAIL_FROM_NAME || 'Weather Dashboard'
+                },
+                subject,
+                html,
+            };
 
-            logger.info(`✅ Email sent: ${info.messageId}`);
+            await sgMail.send(msg);
+            logger.info(`✅ Email sent successfully to ${to}`);
             return true;
-        } catch (error) {
-            logger.error('❌ Failed to send email:', error);
+        } catch (error: any) {
+            logger.error('❌ SendGrid email error:', error);
+            if (error.response) {
+                logger.error('SendGrid error details:', error.response.body);
+            }
             return false;
         }
     }
 
     /**
-     * Send verification email
+     * Send verification email (deprecated - using OTP now)
      */
     async sendVerificationEmail(email: string, username: string, token: string): Promise<boolean> {
         const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
@@ -126,11 +103,7 @@ class EmailService {
             </html>
         `;
 
-        return this.sendEmail({
-            to: email,
-            subject: 'Verify Your Email - Weather Dashboard',
-            html,
-        });
+        return this.sendEmail(email, 'Verify Your Email - Weather Dashboard', html);
     }
 
     /**
@@ -189,11 +162,7 @@ class EmailService {
             </html>
         `;
 
-        return this.sendEmail({
-            to: email,
-            subject,
-            html,
-        });
+        return this.sendEmail(email, subject, html);
     }
 
     /**
@@ -244,11 +213,7 @@ class EmailService {
             </html>
         `;
 
-        return this.sendEmail({
-            to: email,
-            subject: 'Welcome to Weather Dashboard! 🌤️',
-            html,
-        });
+        return this.sendEmail(email, 'Welcome to Weather Dashboard!', html);
     }
 }
 

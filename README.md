@@ -141,13 +141,10 @@ JWT_SECRET=your-super-secret-jwt-key-min-32-chars
 JWT_REFRESH_SECRET=your-refresh-token-secret-key
 OPENWEATHER_API_KEY=your_openweathermap_api_key
 
-# Email Configuration (Gmail example)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_SECURE=false
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASSWORD=your-app-password
-EMAIL_FROM=Weather Dashboard <your-email@gmail.com>
+# SendGrid Email Configuration
+SENDGRID_API_KEY=SG.your-sendgrid-api-key-here
+EMAIL_FROM=noreply@weatherdashboard.com
+EMAIL_FROM_NAME=Weather Dashboard
 
 # CORS
 CORS_ORIGIN=http://localhost:5173
@@ -219,10 +216,9 @@ Visit [http://localhost:5173](http://localhost:5173) in your browser.
 | `JWT_SECRET` | JWT signing secret | Yes | Min 32 characters |
 | `JWT_REFRESH_SECRET` | Refresh token secret | Yes | Min 32 characters |
 | `OPENWEATHER_API_KEY` | OpenWeatherMap API key | Yes | From openweathermap.org |
-| `EMAIL_HOST` | SMTP host | Yes | `smtp.gmail.com` |
-| `EMAIL_PORT` | SMTP port | Yes | `587` |
-| `EMAIL_USER` | Email account | Yes | `your-email@gmail.com` |
-| `EMAIL_PASSWORD` | Email password | Yes | App password |
+| `SENDGRID_API_KEY` | SendGrid API key | Yes | `SG.xxxx...` |
+| `EMAIL_FROM` | Sender email | Yes | `noreply@weatherdashboard.com` |
+| `EMAIL_FROM_NAME` | Sender name | Yes | `Weather Dashboard` |
 | `CORS_ORIGIN` | Allowed origin | No | `http://localhost:5173` |
 
 ### Frontend (.env)

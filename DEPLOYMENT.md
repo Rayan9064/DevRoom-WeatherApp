@@ -126,12 +126,9 @@ Neon provides connection pooling automatically. For backend connection:
    CORS_ORIGIN=https://your-app.vercel.app
    
    # Email Configuration (Gmail example)
-   EMAIL_HOST=smtp.gmail.com
-   EMAIL_PORT=587
-   EMAIL_SECURE=false
-   EMAIL_USER=your-email@gmail.com
-   EMAIL_PASSWORD=<your-app-password>
-   EMAIL_FROM=Weather Dashboard <your-email@gmail.com>
+   SENDGRID_API_KEY=SG.your-sendgrid-api-key-here
+   EMAIL_FROM=noreply@weatherdashboard.com
+   EMAIL_FROM_NAME=Weather Dashboard
    
    # Logging
    LOG_LEVEL=info
@@ -287,10 +284,9 @@ Neon provides connection pooling automatically. For backend connection:
 | `JWT_REFRESH_SECRET` | Refresh token secret | `<64-char-hex-string>` |
 | `OPENWEATHER_API_KEY` | OpenWeatherMap API key | `<your-api-key>` |
 | `CORS_ORIGIN` | Allowed frontend origin | `https://your-app.vercel.app` |
-| `EMAIL_HOST` | SMTP host | `smtp.gmail.com` |
-| `EMAIL_PORT` | SMTP port | `587` |
-| `EMAIL_SECURE` | Use TLS | `false` |
-| `EMAIL_USER` | Email account | `your-email@gmail.com` |
+| `SENDGRID_API_KEY` | SendGrid API key | `SG.xxxx...` |
+| `EMAIL_FROM` | Sender email | `noreply@weatherdashboard.com` |
+| `EMAIL_FROM_NAME` | Sender name | `Weather Dashboard` |
 | `EMAIL_PASSWORD` | Email password/app password | `<app-password>` |
 | `EMAIL_FROM` | From address | `Weather App <email@gmail.com>` |
 | `LOG_LEVEL` | Logging level | `info` |
