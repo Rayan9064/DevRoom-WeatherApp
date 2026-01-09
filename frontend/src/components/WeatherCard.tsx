@@ -44,36 +44,44 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weather, isFavorite, onToggle
 
             <div className="weather-details-grid">
                 <div className="weather-detail-item">
+                    <span className="detail-icon">🌡️</span>
                     <span className="label">Feels Like</span>
                     <span className="value">{Math.round(weather.feels_like)}°</span>
                 </div>
                 <div className="weather-detail-item">
+                    <span className="detail-icon">📊</span>
                     <span className="label">High / Low</span>
                     <span className="value">{Math.round(weather.temp_max)}° / {Math.round(weather.temp_min)}°</span>
                 </div>
                 <div className="weather-detail-item">
+                    <span className="detail-icon">💧</span>
                     <span className="label">Humidity</span>
                     <span className="value">{weather.humidity}%</span>
                 </div>
                 <div className="weather-detail-item">
+                    <span className="detail-icon">💨</span>
                     <span className="label">Wind</span>
                     <span className="value">{weather.wind_speed} m/s</span>
                 </div>
                 <div className="weather-detail-item">
+                    <span className="detail-icon">🎚️</span>
                     <span className="label">Pressure</span>
                     <span className="value">{weather.pressure} hPa</span>
                 </div>
                 <div className="weather-detail-item">
+                    <span className="detail-icon">👁️</span>
                     <span className="label">Visibility</span>
                     <span className="value">{(weather.visibility / 1000).toFixed(1)} km</span>
                 </div>
                 <div className="weather-detail-item">
+                    <span className="detail-icon">🌅</span>
                     <span className="label">Sunrise</span>
                     <span className="value">
                         {new Date((weather.sunrise + weather.timezone) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}
                     </span>
                 </div>
                 <div className="weather-detail-item">
+                    <span className="detail-icon">🌇</span>
                     <span className="label">Sunset</span>
                     <span className="value">
                         {new Date((weather.sunset + weather.timezone) * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}

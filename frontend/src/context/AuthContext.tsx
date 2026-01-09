@@ -12,7 +12,7 @@ interface AuthContextType {
     refreshToken: () => Promise<void>;
     verifyEmail: (token: string) => Promise<void>;
     resendVerification: () => Promise<void>;
-    sendRegistrationOTP: (email: string) => Promise<void>;
+    sendRegistrationOTP: (email: string, username: string, password: string) => Promise<void>;
     verifyRegistrationOTP: (email: string, otp: string, username: string, password: string) => Promise<void>;
     sendPasswordResetOTP: (email: string) => Promise<void>;
     verifyPasswordResetOTP: (email: string, otp: string, newPassword?: string) => Promise<void>;
@@ -70,8 +70,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await authService.resendVerification();
     };
 
-    const sendRegistrationOTP = async (email: string) => {
-        await authService.sendRegistrationOTP(email);
+    const sendRegistrationOTP = async (email: string, username: string, password: string) => {
+        await authService.sendRegistrationOTP(email, username, password);
     };
 
     const verifyRegistrationOTP = async (email: string, otp: string, username: string, password: string) => {

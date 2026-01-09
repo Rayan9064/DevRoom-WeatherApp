@@ -35,9 +35,11 @@ api.interceptors.response.use(
 );
 
 export const authService = {
-    async sendRegistrationOTP(email: string): Promise<ApiResponse<{ message: string }>> {
+    async sendRegistrationOTP(email: string, username: string, password: string): Promise<ApiResponse<{ message: string }>> {
         const response = await api.post<ApiResponse<{ message: string }>>('/auth/send-otp', {
             email,
+            username,
+            password,
             type: 'registration',
         });
         return response.data;
