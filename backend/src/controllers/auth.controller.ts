@@ -400,23 +400,36 @@ export const sendOTP = async (req: Request, res: Response): Promise<void> => {
         // Store hashed OTP (hash is done inside OTPModel.create)
         await OTPModel.create(email, otp, type);
 
-        // Send OTP email
+        // Send OTP email asynchronously (don't wait for it to complete)
         const userForEmail = type === 'registration' 
             ? username 
             : (await UserModel.findByEmail(email))?.username || 'User';
         
-        const emailSent = await emailService.sendOTPEmail(email, userForEmail, otp, type);
-        
-        // If email service is disabled or fails, log OTP for development
-        if (!emailSent && process.env.NODE_ENV === 'development') {
-            logger.info(`🔑 [DEV MODE] OTP for ${email}: ${otp}`);
-        }
+        // Fire and forget - send email in background
+        emailService.sendOTPEmail(email, userForEmail, otp, type)
+            .then((emailSent) => {
+                if (emailSent) {
+                    logger.info(`✅ OTP email sent successfully to ${email}`);
+                } else {
+                    logger.warn(`⚠️ Failed to send OTP email to ${email}`);
+                    // Log OTP for development/testing
+                    if (process.env.NODE_ENV !== 'production') {
+                        logger.info(`🔑 [DEV MODE] OTP for ${email}: ${otp}`);
+                    }
+                }
+            })
+            .catch((error) => {
+                logger.error(`❌ Error sending OTP email to ${email}:`, error);
+                // Log OTP for development/testing
+                if (process.env.NODE_ENV !== 'production') {
+                    logger.info(`🔑 [DEV MODE] OTP for ${email}: ${otp}`);
+                }
+            });
 
+        // Respond immediately without waiting for email
         res.status(200).json({
             success: true,
-            message: emailSent 
-                ? 'OTP sent to your email address' 
-                : 'OTP created (email service unavailable - check server logs in development)'
+            message: 'OTP sent to your email address'
         });
     } catch (error) {
         logger.error('Send OTP error:', error);
