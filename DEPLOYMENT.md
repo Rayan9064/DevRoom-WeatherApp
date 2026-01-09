@@ -153,14 +153,14 @@ Neon provides connection pooling automatically. For backend connection:
 
 1. **Check Health Endpoint**
    ```bash
-   curl https://weatherapp-backend.onrender.com/health
+   curl https://devroom-weatherapp.onrender.com/health
    ```
    Should return: `{"status": "OK", "message": "Weather Dashboard API is running"}`
 
 2. **Test API Endpoints**
    ```bash
    # Test registration
-   curl -X POST https://weatherapp-backend.onrender.com/api/auth/send-otp \
+   curl -X POST https://devroom-weatherapp.onrender.com/api/auth/send-otp \
      -H "Content-Type: application/json" \
      -d '{"email":"test@example.com","type":"registration","username":"testuser","password":"Test123456"}'
    ```
@@ -174,7 +174,7 @@ Neon provides connection pooling automatically. For backend connection:
 1. **Update Environment Variable**
    - Create/update `frontend/.env.production`
    ```env
-   VITE_API_URL=https://weatherapp-backend.onrender.com/api
+   VITE_API_URL=https://devroom-weatherapp.onrender.com/api
    ```
 
 2. **Verify Build Works Locally**
@@ -204,7 +204,7 @@ Neon provides connection pooling automatically. For backend connection:
    - Click "Environment Variables"
    - Add variable:
      ```
-     VITE_API_URL=https://weatherapp-backend.onrender.com/api
+     VITE_API_URL=https://devroom-weatherapp.onrender.com/api
      ```
    - Apply to: Production, Preview, and Development
 
