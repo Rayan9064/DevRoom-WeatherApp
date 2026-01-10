@@ -132,8 +132,8 @@ weatherapp/
 
 #### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/weatherapp.git
-cd weatherapp
+git clone https://github.com/Rayan9064/DevRoom-WeatherApp.git
+cd DevRoom-WeatherApp
 ```
 
 #### 2. Backend Setup
@@ -430,8 +430,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For issues and questions:
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/weatherapp/issues)
-- 📖 Docs: [Documentation](./API_DOCUMENTATION.md)
+- 🐛 Issues: [GitHub Issues](https://github.com/Rayan9064/DevRoom-WeatherApp/issues)
+- 📖 Docs: [Documentation](./docs/API_DOCUMENTATION.md)
 
 ---
 
