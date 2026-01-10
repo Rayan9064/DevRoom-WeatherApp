@@ -381,6 +381,16 @@ export const sendOTP = async (req: Request, res: Response): Promise<void> => {
                 });
                 return;
             }
+
+            // Check if username already exists
+            const usernameExists = await UserModel.usernameExists(username);
+            if (usernameExists) {
+                res.status(409).json({
+                    success: false,
+                    message: 'Username already taken'
+                });
+                return;
+            }
         } else if (type === 'password_reset') {
             // For password reset, check if user exists
             const user = await UserModel.findByEmail(email);
@@ -476,11 +486,21 @@ export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
             }
 
             // Check if user already exists
-            const existingUser = await UserModel.findByEmail(email);
-            if (existingUser) {
-                res.status(400).json({
+            const existingEmail = await UserModel.findByEmail(email);
+            if (existingEmail) {
+                res.status(409).json({
                     success: false,
-                    message: 'User already registered'
+                    message: 'Email already registered'
+                });
+                return;
+            }
+
+            // Check if username already exists
+            const usernameAlreadyExists = await UserModel.usernameExists(username);
+            if (usernameAlreadyExists) {
+                res.status(409).json({
+                    success: false,
+                    message: 'Username already taken'
                 });
                 return;
             }
