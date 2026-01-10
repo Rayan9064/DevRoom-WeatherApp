@@ -39,7 +39,7 @@ backend/
 │   │   ├── favorites.routes.ts   # Favorites endpoints
 │   │   └── weather.routes.ts     # Weather endpoints
 │   ├── services/
-│   │   └── emailService.ts       # Email service with Nodemailer
+│   │   └── emailService.ts       # Email service with Resend
 │   ├── types/                    # TypeScript type definitions
 │   └── server.ts                 # Express app entry point
 ├── tests/
@@ -246,11 +246,14 @@ CREATE TABLE favorite_cities (
 
 ## 🌍 Environment Variables
 
+**Email Service**: Uses [Resend](https://resend.com) for reliable email delivery. Free tier includes 3,000 emails/month.
+
 ### Required
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/weatherdb
 JWT_SECRET=your_secret_key_here
 OPENWEATHER_API_KEY=your_api_key_here
+RESEND_API_KEY=your_resend_api_key
 ```
 
 ### Optional
@@ -258,7 +261,16 @@ OPENWEATHER_API_KEY=your_api_key_here
 PORT=5000
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:5173
+FRONTEND_URL=http://localhost:5173
+EMAIL_FROM=noreply@yourdomain.com
+EMAIL_FROM_NAME=Weather Dashboard
 ```
+
+### Email Configuration
+1. Sign up at [Resend](https://resend.com)
+2. Get your API key from the dashboard
+3. Add and verify your domain (or use `onboarding@resend.dev` for testing)
+4. Set `RESEND_API_KEY` and `EMAIL_FROM` in `.env`
 
 ---
 
@@ -325,11 +337,12 @@ Controller → Model → Database Pool → PostgreSQL
 
 ## 📚 Documentation
 
-- **API Reference:** `../API_DOCUMENTATION.md`
-- **Database Setup:** `../DATABASE_SETUP.md`
-- **Testing Guide:** `../TESTING_GUIDE.md`
-- **Project Status:** `../PROJECT_STATUS.md`
-- **Backend Summary:** `../BACKEND_COMPLETE.md`
+- **API Reference:** `../docs/API_DOCUMENTATION.md`
+- **Email Service:** `../docs/EMAIL_SERVICE.md`
+- **Testing Guide:** `../docs/TESTING_GUIDE.md`
+- **Deployment Guide:** `../docs/DEPLOYMENT.md`
+- **Security Guide:** `../docs/SECURITY.md`
+- **OTP System:** `../docs/OTP_IMPLEMENTATION.md`
 
 ---
 

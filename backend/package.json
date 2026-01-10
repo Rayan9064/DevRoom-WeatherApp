@@ -22,7 +22,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@sendgrid/mail": "^8.1.6",
     "@types/bcryptjs": "^2.4.6",
     "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.17",
@@ -48,6 +47,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "pg": "^8.11.3",
+    "resend": "^6.7.0",
     "response-time": "^2.3.4",
     "typescript": "^5.3.3",
     "uuid": "^13.0.0",

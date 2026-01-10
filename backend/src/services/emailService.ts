@@ -1,7 +1,8 @@
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 import logger from '../config/logger';
 
 class EmailService {
+    private resend: Resend | null = null;
     private isConfigured: boolean = false;
 
     constructor() {
@@ -9,50 +10,54 @@ class EmailService {
     }
 
     private initialize() {
-        const apiKey = process.env.SENDGRID_API_KEY;
+        const apiKey = process.env.RESEND_API_KEY;
         
         if (!apiKey) {
-            logger.warn('📧 SendGrid API key not configured - email service disabled');
-            logger.info('💡 Set SENDGRID_API_KEY environment variable to enable emails');
+            logger.warn('📧 Resend API key not configured - email service disabled');
+            logger.info('💡 Set RESEND_API_KEY environment variable to enable emails');
             return;
         }
 
         try {
-            sgMail.setApiKey(apiKey);
+            this.resend = new Resend(apiKey);
             this.isConfigured = true;
-            logger.info('✅ Email service initialized with SendGrid');
+            logger.info('✅ Email service initialized with Resend');
         } catch (error) {
-            logger.error('❌ Failed to initialize SendGrid:', error);
+            logger.error('❌ Failed to initialize Resend:', error);
         }
     }
 
     /**
-     * Send email using SendGrid
+     * Send email using Resend
      */
     private async sendEmail(to: string, subject: string, html: string): Promise<boolean> {
-        if (!this.isConfigured) {
+        if (!this.isConfigured || !this.resend) {
             logger.warn('📧 Email service not configured - email not sent');
             return false;
         }
 
         try {
-            const msg = {
-                to,
-                from: {
-                    email: process.env.EMAIL_FROM || 'noreply@weatherdashboard.com',
-                    name: process.env.EMAIL_FROM_NAME || 'Weather Dashboard'
-                },
+            const fromEmail = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+            const fromName = process.env.EMAIL_FROM_NAME || 'Weather Dashboard';
+            
+            const { data, error } = await this.resend.emails.send({
+                from: `${fromName} <${fromEmail}>`,
+                to: [to],
                 subject,
                 html,
-            };
+            });
 
-            await sgMail.send(msg);
+            if (error) {
+                logger.error('❌ Resend email error:', error);
+                return false;
+            }
+
             logger.info(`✅ Email sent successfully to ${to}`);
             return true;
         } catch (error: any) {
-            logger.error('❌ SendGrid email error:', error);
-            if (error.response) {
-                logger.error('SendGrid error details:', error.response.body);
+            logger.error('❌ Email sending error:', error);
+            if (error.message) {
+                logger.error('Error message:', error.message);
             }
             return false;
         }

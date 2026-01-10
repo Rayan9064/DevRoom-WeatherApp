@@ -195,11 +195,13 @@ Visit [http://localhost:5173](http://localhost:5173) in your browser.
 
 | Document | Description |
 |----------|-------------|
-| [DEPLOYMENT.md](./DEPLOYMENT.md) | Complete deployment guide for Render + Vercel + Neon |
-| [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) | Full API reference with examples |
-| [SECURITY.md](./SECURITY.md) | Security features and best practices |
-| [POSTGRESQL_SETUP.md](./POSTGRESQL_SETUP.md) | Database setup instructions |
-| [TESTING_GUIDE.md](./TESTING_GUIDE.md) | How to test the application |
+| [DEPLOYMENT.md](./docs/DEPLOYMENT.md) | Complete deployment guide for Render + Vercel + Neon |
+| [API_DOCUMENTATION.md](./docs/API_DOCUMENTATION.md) | Full API reference with examples |
+| [EMAIL_SERVICE.md](./docs/EMAIL_SERVICE.md) | Email service setup with Resend |
+| [SECURITY.md](./docs/SECURITY.md) | Security features and best practices |
+| [TESTING_GUIDE.md](./docs/TESTING_GUIDE.md) | How to test the application |
+| [OTP_IMPLEMENTATION.md](./docs/OTP_IMPLEMENTATION.md) | OTP email verification system |
+| [PWA_FEATURES.md](./docs/PWA_FEATURES.md) | Progressive Web App features |
 | [backend/README.md](./backend/README.md) | Backend-specific documentation |
 
 ---

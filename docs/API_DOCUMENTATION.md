@@ -3,7 +3,7 @@
 Base URL: `http://localhost:5000/api`
 
 **Version:** 2.0.0  
-**Last Updated:** January 8, 2026
+**Last Updated:** January 10, 2026
 
 ---
 
@@ -628,6 +628,88 @@ All API responses follow this structure:
    ```
 3. Token expires in 7 days (configurable)
 4. If token expires, login again to get a new token
+
+---
+
+## 📝 Notes
+
+- All timestamps are in ISO 8601 format (UTC)
+
+**POST** `/email/send-otp`
+
+Test sending an OTP email for registration or password reset.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "username": "John Doe",
+  "otp": "123456",
+  "type": "registration"
+}
+```
+
+**Parameters:**
+- `type`: Either `"registration"` or `"password_reset"`
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Email sent successfully"
+}
+```
+
+---
+
+### Send Verification Email
+
+**POST** `/email/send-verification`
+
+Test sending an email verification link.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "username": "John Doe",
+  "token": "abc123xyz456"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Email sent successfully"
+}
+```
+
+---
+
+### Send Welcome Email
+
+**POST** `/email/send-welcome`
+
+Test sending a welcome email after successful verification.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "username": "John Doe"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Email sent successfully"
+}
+```
+
+**Note:** Email service uses [Resend](https://resend.com). Configure `RESEND_API_KEY` and `EMAIL_FROM` in environment variables.
 
 ---
 
