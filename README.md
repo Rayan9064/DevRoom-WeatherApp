@@ -16,13 +16,23 @@ A production-ready full-stack weather dashboard application with real-time weath
 
 ### Core Features
 - 🔐 **Secure Authentication** - JWT-based with OTP email verification
-- 🌤️ **Real-time Weather Data** - OpenWeatherMap API integration
+- 🌤️ **Real-time Weather Data** - OpenWeatherMap API integration with detailed metrics
 - 🏙️ **City Search** - Search weather for any city worldwide
 - ⭐ **Favorites Management** - Save and manage favorite cities
 - 📱 **Responsive Design** - Works perfectly on mobile, tablet, and desktop
 - 💾 **Offline Support** - PWA with service worker for offline access
 - ⚡ **Loading Skeletons** - Smooth loading experience
 - 🔔 **Offline Banner** - Clear indication when offline
+- 📊 **Interactive Weather Metrics** - Tooltips with detailed descriptions on hover (desktop) or tap (mobile)
+
+### Weather Metrics Display
+- **Temperature** - Current, feels-like, high/low with explanations
+- **Humidity** - Relative humidity with impact description
+- **Wind Speed** - Current wind velocity with context
+- **Atmospheric Pressure** - Pressure readings with weather implications
+- **Visibility** - Distance visibility affected by conditions
+- **Sunrise/Sunset** - Precise times for your location
+- **Smart Tooltips** - Hover (desktop) or tap (mobile) for metric explanations
 
 ### Security Features
 - 🛡️ Helmet.js security headers
@@ -47,10 +57,11 @@ A production-ready full-stack weather dashboard application with real-time weath
 - **Framework**: Express.js
 - **Language**: TypeScript
 - **Database**: PostgreSQL (Neon.tech)
-- **Authentication**: JWT + Refresh Tokens
-- **Email**: Nodemailer
+- **Authentication**: JWT + Refresh Tokens + OTP
+- **Email**: Resend (for OTP delivery)
 - **Logging**: Winston
 - **Testing**: Jest
+- **Security**: Helmet, Rate Limiting, Input Sanitization
 
 ### Frontend
 - **Framework**: React 19
